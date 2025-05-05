@@ -1,0 +1,6 @@
+name: NeoArtisan
+version: '1.0-beta'
+main: io.github.MoYuSOwO.neoArtisan.NeoArtisan
+api-version: '1.21'
+authors: [ MoYuOwO ]
+description: NMSChunkDataHandler
