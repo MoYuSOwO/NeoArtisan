@@ -1,0 +1,7 @@
+registryId: magic_diamond
+rawMaterial: diamond
+customModelData: -1
+displayName: <blue>魔法钻石~ # 默认为白色+非斜体
+lore: # 默认为白色+非斜体
+  - 被神赐福过的魔法钻石
+  - 可以合成更多的钻石噢

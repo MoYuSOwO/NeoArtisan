@@ -1,0 +1,12 @@
+registryId: magic_bread
+rawMaterial: bread
+customModelData: -1
+displayName: <red>魔法面包~ # 默认为白色+非斜体
+lore: # 默认为白色+非斜体
+  - 魔法面包好
+  - 魔法面包妙
+  - 魔法面包生存少不了
+food:
+  nutrition: 10
+  saturation: 10.0
+  canAlwaysEat: true

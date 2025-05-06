@@ -1,0 +1,8 @@
+registryId: broken_stick
+rawMaterial: stick
+hasOriginalCraft: true
+customModelData: -1
+displayName: 有点损坏的木棍 # 默认为白色+非斜体
+lore: # 默认为白色+非斜体
+  - 是一根好像快坏掉了的木棍
+  - 但是似乎还能用

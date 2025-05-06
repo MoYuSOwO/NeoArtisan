@@ -1,5 +1,8 @@
 package io.github.MoYuSOwO.neoArtisan;
 
+import io.github.MoYuSOwO.neoArtisan.item.ItemCommandRegistrar;
+import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,11 +33,12 @@ public final class NeoArtisan extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        ItemRegistry.init();
+        ItemCommandRegistrar.registerCommands();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        Bukkit.resetRecipes();
     }
 }
