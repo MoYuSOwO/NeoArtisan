@@ -25,7 +25,7 @@ public final class ItemRegistry {
 
     public static void init() {
         ItemRegistry.registerItemFromFile();
-        NeoArtisan.instance().getLogger().info("成功从文件注册 " + registry.size() + " 个自定义物品");
+        NeoArtisan.logger().info("成功从文件注册 " + registry.size() + " 个自定义物品");
     }
 
     public static void registerItemFromFile() {
@@ -69,12 +69,41 @@ public final class ItemRegistry {
         return Objects.requireNonNull(registryId);
     }
 
-    public static boolean hasArtisanItem(NamespacedKey registryId) {
+    public static boolean hasItem(@Nullable NamespacedKey registryId) {
+        if (registryId == null) return false;
+        else if (hasArtisanItem(registryId)) return true;
+        else return registryId.getNamespace().equals("minecraft") && Material.getMaterial(registryId.getKey().toUpperCase()) != null;
+    }
+
+    public static ItemStack getItemStack(NamespacedKey registryId, int count) {
+        if (hasArtisanItem(registryId)) return getArtisanItem(registryId).getItemStack(count);
+        Material material = Material.getMaterial(registryId.getKey().toUpperCase());
+        if (material == null) throw new IllegalArgumentException("You should use has method to check before get!");
+        return new ItemStack(material, count);
+    }
+
+    public static ItemStack getItemStack(NamespacedKey registryId) {
+        return getItemStack(registryId, 1);
+    }
+
+    public static boolean hasArtisanItem(@Nullable NamespacedKey registryId) {
+        if (registryId == null) return false;
         return registry.containsKey(registryId);
+    }
+
+    public static boolean hasArtisanItem(@Nullable ItemStack itemStack) {
+        if (itemStack == null) return false;
+        return hasArtisanItem(getRegistryId(itemStack));
     }
 
     public static @NotNull ArtisanItem getArtisanItem(NamespacedKey registryId) {
         ArtisanItem artisanItem = registry.get(registryId);
+        if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
+        return artisanItem;
+    }
+
+    public static @NotNull ArtisanItem getArtisanItem(ItemStack itemStack) {
+        ArtisanItem artisanItem = registry.get(getRegistryId(itemStack));
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }

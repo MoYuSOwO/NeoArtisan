@@ -2,10 +2,13 @@ package io.github.MoYuSOwO.neoArtisan;
 
 import io.github.MoYuSOwO.neoArtisan.item.ItemCommandRegistrar;
 import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
+import io.github.MoYuSOwO.neoArtisan.recipe.RecipeRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public final class NeoArtisan extends JavaPlugin {
@@ -31,10 +34,15 @@ public final class NeoArtisan extends JavaPlugin {
         return instance.getLogger();
     }
 
+    public static void registerListener(Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, instance);
+    }
+
     @Override
     public void onEnable() {
         ItemRegistry.init();
         ItemCommandRegistrar.registerCommands();
+        RecipeRegistry.init();
     }
 
     @Override

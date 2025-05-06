@@ -44,7 +44,7 @@ public final class ReadUtil {
 
     public static NamespacedKey getRegistryId(YamlConfiguration item) {
         String registryId = item.getString("registryId");
-        if (registryId != null) return new NamespacedKey(NeoArtisan.instance(), registryId);
+        if (registryId != null) return new NamespacedKey("neoartisan", registryId);
         else throw new IllegalArgumentException("You must provide a registryId!");
     }
 
