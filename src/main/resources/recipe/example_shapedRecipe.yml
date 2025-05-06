@@ -1,0 +1,10 @@
+type: shaped
+shape:
+  - "A B"
+  - "   "
+  - "   "
+mappings:
+  A: "neoartisan:magic_bread"
+  B: "neoartisan:magic_sword"
+result: "apple"
+count: 64

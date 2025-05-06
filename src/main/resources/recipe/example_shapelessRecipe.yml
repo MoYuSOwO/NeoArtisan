@@ -1,0 +1,7 @@
+type: shapeless
+items:
+  - "neoartisan:magic_diamond"
+  - "neoartisan:magic_bread"
+  - "iron_ingot"
+result: "diamond"
+count: 64
