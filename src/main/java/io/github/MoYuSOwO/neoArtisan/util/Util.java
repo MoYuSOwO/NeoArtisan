@@ -3,6 +3,7 @@ package io.github.MoYuSOwO.neoArtisan.util;
 import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.Collection;
 
@@ -14,7 +15,6 @@ public final class Util {
         String id = s;
         if (!id.contains(":")) id = "minecraft:" + s;
         NamespacedKey key = NamespacedKey.fromString(id);
-        System.out.println(key);
         if (!ItemRegistry.hasItem(key)) throw new IllegalArgumentException(s + " is not a effective registryId");
         return key;
     }
@@ -38,5 +38,13 @@ public final class Util {
             }
         }
         return total;
+    }
+
+    public static EquipmentSlot toSlotOrNull(String slot) {
+        try {
+            return EquipmentSlot.valueOf(slot);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

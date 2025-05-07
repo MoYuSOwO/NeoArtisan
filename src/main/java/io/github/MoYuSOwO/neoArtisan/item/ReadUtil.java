@@ -1,10 +1,12 @@
 package io.github.MoYuSOwO.neoArtisan.item;
 
 import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.MoYuSOwO.neoArtisan.util.Util;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -23,6 +25,7 @@ public final class ReadUtil {
             saveDefaultIfNotExists("item/magic_diamond.yml");
             saveDefaultIfNotExists("item/magic_sword.yml");
             saveDefaultIfNotExists("item/broken_stick.yml");
+            saveDefaultIfNotExists("item/magic_helmet.yml");
         }
         return itemFolder.listFiles();
     }
@@ -62,9 +65,9 @@ public final class ReadUtil {
         return rawMaterial;
     }
 
-    public static int getCustomModelData(YamlConfiguration item) {
+    public static Integer getCustomModelData(YamlConfiguration item) {
         int customModelData = item.getInt("customModelData");
-        if (customModelData <= 0) return -1;
+        if (customModelData <= 0) return null;
         else return customModelData;
     }
 
@@ -83,7 +86,7 @@ public final class ReadUtil {
         ConfigurationSection food = item.getConfigurationSection("food");
         if (food != null) {
             int nutrition = food.getInt("nutrition");
-            int saturation = food.getInt("saturation");
+            float saturation = (float) food.getDouble("saturation");
             boolean canAlwaysEat = food.getBoolean("canAlwaysEat");
             if (nutrition <= 0 || saturation <= 0) throw new IllegalArgumentException("You must provide a effective food value!");
             foodProperty = new FoodProperty(nutrition, saturation, canAlwaysEat);
@@ -95,23 +98,32 @@ public final class ReadUtil {
         WeaponProperty weaponProperty = WeaponProperty.EMPTY;
         ConfigurationSection weapon = item.getConfigurationSection("weapon");
         if (weapon != null) {
-            String speedString = weapon.getString("speed");
-            String knockbackString = weapon.getString("knockback");
-            String damageString = weapon.getString("damage");
-            float speed = 0, knockback = 0, damage = 0;
-            if (speedString == null && knockbackString == null && damageString == null) throw new IllegalArgumentException("You must provide a effective weapon value!");
-            if (speedString != null) speed = Float.parseFloat(speedString);
-            if (knockbackString != null) knockback = Float.parseFloat(knockbackString);
-            if (damageString != null) damage = Float.parseFloat(damageString);
+            float speed = (float) weapon.getDouble("speed");
+            float knockback = (float) weapon.getDouble("knockback");
+            float damage = (float) weapon.getDouble("damage");
+            if (speed <= 0 || knockback <= 0 || damage <= 0) throw new IllegalArgumentException("You must provide a effective weapon value!");
             weaponProperty = new WeaponProperty(speed, knockback, damage);
         }
         return weaponProperty;
     }
 
-    public static int getMaxDurability(YamlConfiguration item) {
+    public static Integer getMaxDurability(YamlConfiguration item) {
         int maxDurability = item.getInt("maxDurability");
-        if (maxDurability <= 0) return -1;
+        if (maxDurability <= 0) return null;
         else return maxDurability;
+    }
+
+    public static ArmorProperty getArmor(YamlConfiguration item) {
+        ArmorProperty armorProperty = ArmorProperty.EMPTY;
+        ConfigurationSection armorConfig = item.getConfigurationSection("armor");
+        if (armorConfig != null) {
+            int armor = armorConfig.getInt("armor");
+            int armorToughness = armorConfig.getInt("armorToughness");
+            String slot = armorConfig.getString("slot");
+            if (armor <= 0 || armorToughness <= 0 || slot == null || Util.toSlotOrNull(slot.toUpperCase()) == null) throw new IllegalArgumentException("You must provide a effective armor value!");
+            armorProperty = new ArmorProperty(armor, armorToughness, Util.toSlotOrNull(slot.toUpperCase()));
+        }
+        return armorProperty;
     }
 
     public static boolean getOriginalCraft(YamlConfiguration item) {

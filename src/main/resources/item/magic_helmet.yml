@@ -1,0 +1,11 @@
+registryId: magic_helmet
+rawMaterial: iron_helmet
+displayName: <aqua>魔法头盔~ # 默认为白色+非斜体
+lore: # 默认为灰色+非斜体
+  - 魔法头盔一顶
+  - 可以帮助你挡住下落的蜘（ji）蛛（ju）
+armor:
+  armor: 5
+  armorToughness: 1
+  slot: head # head feet chest body
+maxDurability: 2500

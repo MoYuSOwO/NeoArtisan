@@ -43,17 +43,29 @@ public final class ItemRegistry {
         NamespacedKey registryId = ReadUtil.getRegistryId(item);
         Material rawMaterial = ReadUtil.getRawMaterial(item);
         boolean hasOriginalCraft = ReadUtil.getOriginalCraft(item);
-        int customModelData = ReadUtil.getCustomModelData(item);
+        Integer customModelData = ReadUtil.getCustomModelData(item);
         String displayName = ReadUtil.getDisplayName(item);
         List<String> lore = ReadUtil.getLore(item);
         FoodProperty foodProperty = ReadUtil.getFood(item);
         WeaponProperty weaponProperty = ReadUtil.getWeapon(item);
-        int maxDurability = ReadUtil.getMaxDurability(item);
-        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability);
+        Integer maxDurability = ReadUtil.getMaxDurability(item);
+        ArmorProperty armorProperty = ReadUtil.getArmor(item);
+        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty);
     }
 
-    public static void registerItem(NamespacedKey registryId, Material rawMaterial, boolean hasOriginalCraft, int customModelData, String displayName, List<String> lore, @NotNull FoodProperty foodProperty, @NotNull WeaponProperty weaponProperty, int maxDurability) {
-        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability));
+    public static void registerItem(
+            NamespacedKey registryId,
+            Material rawMaterial,
+            boolean hasOriginalCraft,
+            @Nullable Integer customModelData,
+            String displayName,
+            List<String> lore,
+            @NotNull FoodProperty foodProperty,
+            @NotNull WeaponProperty weaponProperty,
+            @Nullable Integer maxDurability,
+            @NotNull ArmorProperty armorProperty
+    ) {
+        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty));
     }
 
     public static Set<String> getAllIds() {

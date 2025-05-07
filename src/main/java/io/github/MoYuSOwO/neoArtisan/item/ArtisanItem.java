@@ -4,47 +4,51 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
 import io.github.MoYuSOwO.neoArtisan.util.NamespacedKeyDataType;
-import io.github.MoYuSOwO.neoArtisan.util.Util;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.bukkit.inventory.meta.components.FoodComponent;
-import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ArtisanItem {
     private final NamespacedKey registryId;
     private final Material rawMaterial;
     private final boolean hasOriginalCraft;
-    private final int customModelData;
+    private final Integer customModelData;
     private final Component displayName;
     private final List<Component> lore;
     private final FoodProperty foodProperty;
     private final WeaponProperty weaponProperty;
-    private final int maxDurability;
+    private final Integer maxDurability;
+    private final ArmorProperty armorProperty;
     private final ItemMeta itemMeta;
 
     protected ArtisanItem(
             NamespacedKey registryId,
             Material rawMaterial,
             boolean hasOriginalCraft,
-            Integer customModelData,
+            @Nullable Integer customModelData,
             Component displayName,
             List<Component> lore,
             @NotNull FoodProperty foodProperty,
             @NotNull WeaponProperty weaponProperty,
-            int maxDurability
+            @Nullable Integer maxDurability,
+            @NotNull ArmorProperty armorProperty
     ) {
         this.registryId = registryId;
         this.rawMaterial = rawMaterial;
@@ -55,6 +59,7 @@ public class ArtisanItem {
         this.foodProperty = foodProperty;
         this.weaponProperty = weaponProperty;
         this.maxDurability = maxDurability;
+        this.armorProperty = armorProperty;
         this.itemMeta = createNewItemMeta();
     }
 
@@ -62,12 +67,13 @@ public class ArtisanItem {
             NamespacedKey registryId,
             Material rawMaterial,
             boolean hasOriginalCraft,
-            Integer customModelData,
+            @Nullable Integer customModelData,
             String displayName,
             List<String> lore,
             @NotNull FoodProperty foodProperty,
             @NotNull WeaponProperty weaponProperty,
-            int maxDurability
+            @Nullable Integer maxDurability,
+            @NotNull ArmorProperty armorProperty
     ) {
         this(
                 registryId,
@@ -78,7 +84,8 @@ public class ArtisanItem {
                 toLoreComponentList(lore),
                 foodProperty,
                 weaponProperty,
-                maxDurability
+                maxDurability,
+                armorProperty
         );
     }
 
@@ -115,7 +122,6 @@ public class ArtisanItem {
     }
 
     public Integer getCustomModelData() {
-        if (this.customModelData == -1) return null;
         return this.customModelData;
     }
 
@@ -128,7 +134,6 @@ public class ArtisanItem {
     }
 
     public Integer getMaxDurability() {
-        if (this.maxDurability == -1) return null;
         return this.maxDurability;
     }
 
@@ -136,9 +141,10 @@ public class ArtisanItem {
     private ItemMeta createNewItemMeta() {
         ItemMeta itemMeta = new ItemStack(this.rawMaterial).getItemMeta();
         Multimap<Attribute, AttributeModifier> modifiers = ArrayListMultimap.create();
+        modifiers.putAll(this.rawMaterial.getDefaultAttributeModifiers());
         itemMeta.displayName(this.displayName);
         itemMeta.lore(this.lore);
-        if (this.customModelData != -1) {
+        if (this.customModelData != null) {
             itemMeta.setCustomModelData(this.customModelData);
         }
         itemMeta.getPersistentDataContainer().set(NeoArtisan.getArtisanItemIdKey(), NamespacedKeyDataType.TYPE, this.registryId);
@@ -150,6 +156,9 @@ public class ArtisanItem {
             itemMeta.setFood(foodComponent);
         }
         if (this.weaponProperty != WeaponProperty.EMPTY) {
+            modifiers.removeAll(Attribute.ATTACK_DAMAGE);
+            modifiers.removeAll(Attribute.ATTACK_SPEED);
+            modifiers.removeAll(Attribute.ATTACK_KNOCKBACK);
             modifiers.put(
                     Attribute.ATTACK_DAMAGE,
                     new AttributeModifier(
@@ -178,7 +187,32 @@ public class ArtisanItem {
                     )
             );
         }
-        if (this.maxDurability != -1 && (itemMeta instanceof Damageable)) {
+        if (this.armorProperty != ArmorProperty.EMPTY) {
+            EquippableComponent equippableComponent = itemMeta.getEquippable();
+            equippableComponent.setSlot(this.armorProperty.slot());
+            itemMeta.setEquippable(equippableComponent);
+            modifiers.removeAll(Attribute.ARMOR);
+            modifiers.removeAll(Attribute.ARMOR_TOUGHNESS);
+            modifiers.put(
+                    Attribute.ARMOR,
+                    new AttributeModifier(
+                            this.registryId,
+                            this.armorProperty.armor(),
+                            AttributeModifier.Operation.ADD_NUMBER,
+                            this.armorProperty.slot().getGroup()
+                    )
+            );
+            modifiers.put(
+                    Attribute.ARMOR_TOUGHNESS,
+                    new AttributeModifier(
+                            this.registryId,
+                            this.armorProperty.armorToughness(),
+                            AttributeModifier.Operation.ADD_NUMBER,
+                            this.armorProperty.slot().getGroup()
+                    )
+            );
+        }
+        if (this.maxDurability != null && (itemMeta instanceof Damageable)) {
             ((Damageable) itemMeta).setMaxDamage(this.maxDurability);
         }
         itemMeta.setAttributeModifiers(modifiers);
