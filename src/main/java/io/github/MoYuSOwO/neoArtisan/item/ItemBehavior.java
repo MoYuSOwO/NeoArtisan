@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.FoodComponent;
 
@@ -29,9 +30,6 @@ public final class ItemBehavior implements Listener {
     private static void onAttackWithArtisanWeapon(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
         if (event.getDamager() instanceof Player player) {
-            Material material = player.getInventory().getItemInMainHand().getType();
-            System.out.println(material.getDefaultAttributeModifiers());
-
             ItemStack itemStack = player.getInventory().getItemInMainHand();
             ItemMeta itemMeta = itemStack.getItemMeta();
             net.minecraft.world.item.ItemStack nmsItem = ((CraftItemStack) itemStack).handle;
@@ -41,7 +39,7 @@ public final class ItemBehavior implements Listener {
                 System.out.println(modifiers.modifiers());
             }
             System.out.println(itemMeta.getAttributeModifiers());
-            System.out.println(event.getDamage());
+            System.out.println(((Damageable) itemMeta).getMaxDamage());
         }
     }
 
