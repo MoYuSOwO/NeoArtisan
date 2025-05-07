@@ -48,11 +48,12 @@ public final class ItemRegistry {
         List<String> lore = ReadUtil.getLore(item);
         FoodProperty foodProperty = ReadUtil.getFood(item);
         WeaponProperty weaponProperty = ReadUtil.getWeapon(item);
-        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty);
+        int maxDurability = ReadUtil.getMaxDurability(item);
+        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability);
     }
 
-    public static void registerItem(NamespacedKey registryId, Material rawMaterial, boolean hasOriginalCraft, int customModelData, String displayName, List<String> lore, @NotNull FoodProperty foodProperty, @NotNull WeaponProperty weaponProperty) {
-        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty));
+    public static void registerItem(NamespacedKey registryId, Material rawMaterial, boolean hasOriginalCraft, int customModelData, String displayName, List<String> lore, @NotNull FoodProperty foodProperty, @NotNull WeaponProperty weaponProperty, int maxDurability) {
+        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability));
     }
 
     public static Set<String> getAllIds() {

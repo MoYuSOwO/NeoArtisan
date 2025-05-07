@@ -13,6 +13,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.inventory.meta.components.UseCooldownComponent;
@@ -31,9 +32,20 @@ public class ArtisanItem {
     private final List<Component> lore;
     private final FoodProperty foodProperty;
     private final WeaponProperty weaponProperty;
+    private final int maxDurability;
     private final ItemMeta itemMeta;
 
-    protected ArtisanItem(NamespacedKey registryId, Material rawMaterial, boolean hasOriginalCraft, Integer customModelData, Component displayName, List<Component> lore, @NotNull FoodProperty foodProperty, @NotNull WeaponProperty weaponProperty) {
+    protected ArtisanItem(
+            NamespacedKey registryId,
+            Material rawMaterial,
+            boolean hasOriginalCraft,
+            Integer customModelData,
+            Component displayName,
+            List<Component> lore,
+            @NotNull FoodProperty foodProperty,
+            @NotNull WeaponProperty weaponProperty,
+            int maxDurability
+    ) {
         this.registryId = registryId;
         this.rawMaterial = rawMaterial;
         this.hasOriginalCraft = hasOriginalCraft;
@@ -42,11 +54,32 @@ public class ArtisanItem {
         this.lore = lore;
         this.foodProperty = foodProperty;
         this.weaponProperty = weaponProperty;
+        this.maxDurability = maxDurability;
         this.itemMeta = createNewItemMeta();
     }
 
-    protected ArtisanItem(NamespacedKey registryId, Material rawMaterial, boolean hasOriginalCraft, Integer customModelData, String displayName, List<String> lore, @NotNull FoodProperty foodProperty, @NotNull WeaponProperty weaponProperty) {
-        this(registryId, rawMaterial, hasOriginalCraft, customModelData, toNameComponent(displayName), toLoreComponentList(lore), foodProperty, weaponProperty);
+    protected ArtisanItem(
+            NamespacedKey registryId,
+            Material rawMaterial,
+            boolean hasOriginalCraft,
+            Integer customModelData,
+            String displayName,
+            List<String> lore,
+            @NotNull FoodProperty foodProperty,
+            @NotNull WeaponProperty weaponProperty,
+            int maxDurability
+    ) {
+        this(
+                registryId,
+                rawMaterial,
+                hasOriginalCraft,
+                customModelData,
+                toNameComponent(displayName),
+                toLoreComponentList(lore),
+                foodProperty,
+                weaponProperty,
+                maxDurability
+        );
     }
 
     protected ItemStack getItemStack(int count) {
@@ -81,7 +114,8 @@ public class ArtisanItem {
         return this.hasOriginalCraft;
     }
 
-    public int getCustomModelData() {
+    public Integer getCustomModelData() {
+        if (this.customModelData == -1) return null;
         return this.customModelData;
     }
 
@@ -91,6 +125,11 @@ public class ArtisanItem {
 
     public WeaponProperty getWeaponProperty() {
         return this.weaponProperty;
+    }
+
+    public Integer getMaxDurability() {
+        if (this.maxDurability == -1) return null;
+        return this.maxDurability;
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -138,36 +177,9 @@ public class ArtisanItem {
                             EquipmentSlotGroup.MAINHAND
                     )
             );
-//            double baseAttackDamage = Util.getTotalAttributeValue(this.rawMaterial.getDefaultAttributeModifiers().get(Attribute.ATTACK_DAMAGE));
-//            itemMeta.addAttributeModifier(
-//                    Attribute.ATTACK_DAMAGE,
-//                    new AttributeModifier(
-//                            NeoArtisan.getArtisanItemAttackDamageKey(),
-//                            this.weaponProperty.damage() - baseAttackDamage,
-//                            AttributeModifier.Operation.ADD_NUMBER,
-//                            EquipmentSlotGroup.MAINHAND
-//                    )
-//            );
-//            double baseAttackSpeed = Util.getTotalAttributeValue(this.rawMaterial.getDefaultAttributeModifiers().get(Attribute.ATTACK_SPEED));
-//            itemMeta.addAttributeModifier(
-//                    Attribute.ATTACK_SPEED,
-//                    new AttributeModifier(
-//                            NeoArtisan.getArtisanItemAttackSpeedKey(),
-//                            this.weaponProperty.speed() - baseAttackSpeed,
-//                            AttributeModifier.Operation.ADD_NUMBER,
-//                            EquipmentSlotGroup.MAINHAND
-//                    )
-//            );
-//            double baseAttackKnockback = Util.getTotalAttributeValue(this.rawMaterial.getDefaultAttributeModifiers().get(Attribute.ATTACK_KNOCKBACK));
-//            itemMeta.addAttributeModifier(
-//                    Attribute.ATTACK_KNOCKBACK,
-//                    new AttributeModifier(
-//                            NeoArtisan.getArtisanItemAttackKnockbackKey(),
-//                            this.weaponProperty.knockback() - baseAttackKnockback,
-//                            AttributeModifier.Operation.ADD_NUMBER,
-//                            EquipmentSlotGroup.MAINHAND
-//                    )
-//            );
+        }
+        if (this.maxDurability != -1 && (itemMeta instanceof Damageable)) {
+            ((Damageable) itemMeta).setMaxDamage(this.maxDurability);
         }
         itemMeta.setAttributeModifiers(modifiers);
         return itemMeta;

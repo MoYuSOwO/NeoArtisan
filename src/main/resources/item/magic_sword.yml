@@ -9,3 +9,4 @@ weapon:
   speed: 1.0
   knockback: 1.5
   damage: 11.0
+maxDurability: 5000
