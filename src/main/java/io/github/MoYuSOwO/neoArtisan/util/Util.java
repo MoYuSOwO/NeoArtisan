@@ -7,7 +7,7 @@ public final class Util {
 
     private Util() {}
 
-    public static NamespacedKey toNamespaceKey(String s) {
+    public static NamespacedKey stringToNamespaceKey(String s) {
         String id = s;
         if (!id.contains(":")) id = "minecraft:" + s;
         NamespacedKey key = NamespacedKey.fromString(id);
