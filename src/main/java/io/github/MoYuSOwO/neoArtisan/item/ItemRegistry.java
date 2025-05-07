@@ -24,6 +24,7 @@ public final class ItemRegistry {
 
     public static void init() {
         ItemRegistry.registerItemFromFile();
+        ItemBehavior.init();
         NeoArtisan.logger().info("成功从文件注册 " + registry.size() + " 个自定义物品");
     }
 
@@ -46,11 +47,12 @@ public final class ItemRegistry {
         String displayName = ReadUtil.getDisplayName(item);
         List<String> lore = ReadUtil.getLore(item);
         FoodProperty foodProperty = ReadUtil.getFood(item);
-        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty);
+        WeaponProperty weaponProperty = ReadUtil.getWeapon(item);
+        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty);
     }
 
-    public static void registerItem(NamespacedKey registryId, Material rawMaterial, boolean hasOriginalCraft, int customModelData, String displayName, List<String> lore, FoodProperty foodProperty) {
-        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty));
+    public static void registerItem(NamespacedKey registryId, Material rawMaterial, boolean hasOriginalCraft, int customModelData, String displayName, List<String> lore, @NotNull FoodProperty foodProperty, @NotNull WeaponProperty weaponProperty) {
+        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty));
     }
 
     public static Set<String> getAllIds() {
@@ -63,8 +65,8 @@ public final class ItemRegistry {
     }
 
     public static @NotNull NamespacedKey getRegistryId(@NotNull ItemStack itemStack) {
-        if (!itemStack.getItemMeta().getPersistentDataContainer().has(NeoArtisan.getArtisanItemKey())) return itemStack.getType().getKey();
-        NamespacedKey registryId = itemStack.getItemMeta().getPersistentDataContainer().get(NeoArtisan.getArtisanItemKey(), NamespacedKeyDataType.TYPE);
+        if (!itemStack.getItemMeta().getPersistentDataContainer().has(NeoArtisan.getArtisanItemIdKey())) return itemStack.getType().getKey();
+        NamespacedKey registryId = itemStack.getItemMeta().getPersistentDataContainer().get(NeoArtisan.getArtisanItemIdKey(), NamespacedKeyDataType.TYPE);
         return Objects.requireNonNull(registryId);
     }
 

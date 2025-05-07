@@ -85,10 +85,33 @@ public final class ReadUtil {
             int nutrition = food.getInt("nutrition");
             int saturation = food.getInt("saturation");
             boolean canAlwaysEat = food.getBoolean("canAlwaysEat");
-            if (nutrition == 0 || saturation == 0) throw new IllegalArgumentException("You must provide a effective food value!");
+            if (nutrition <= 0 || saturation <= 0) throw new IllegalArgumentException("You must provide a effective food value!");
             foodProperty = new FoodProperty(nutrition, saturation, canAlwaysEat);
         }
         return foodProperty;
+    }
+
+    public static @NotNull WeaponProperty getWeapon(YamlConfiguration item) {
+        WeaponProperty weaponProperty = WeaponProperty.EMPTY;
+        ConfigurationSection weapon = item.getConfigurationSection("weapon");
+        if (weapon != null) {
+            String speedString = weapon.getString("speed");
+            String knockbackString = weapon.getString("knockback");
+            String damageString = weapon.getString("damage");
+            float speed = 0, knockback = 0, damage = 0;
+            if (speedString == null && knockbackString == null && damageString == null) throw new IllegalArgumentException("You must provide a effective weapon value!");
+            if (speedString != null) speed = Float.parseFloat(speedString);
+            if (knockbackString != null) knockback = Float.parseFloat(knockbackString);
+            if (damageString != null) damage = Float.parseFloat(damageString);
+            weaponProperty = new WeaponProperty(speed, knockback, damage);
+        }
+        return weaponProperty;
+    }
+
+    public static int getMaxDurability(YamlConfiguration item) {
+        int maxDurability = item.getInt("maxDurability");
+        if (maxDurability <= 0) return -1;
+        else return maxDurability;
     }
 
     public static boolean getOriginalCraft(YamlConfiguration item) {

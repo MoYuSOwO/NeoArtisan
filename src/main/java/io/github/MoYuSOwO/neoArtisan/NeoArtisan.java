@@ -9,22 +9,40 @@ import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Objects;
 import java.util.logging.Logger;
 
 public final class NeoArtisan extends JavaPlugin {
 
     private static NeoArtisan instance;
-    private static NamespacedKey artisanItemKey;
+    private static NamespacedKey artisanItemIdKey;
+    private static NamespacedKey artisanItemAttackDamageKey, artisanItemAttackKnockbackKey, artisanItemAttackSpeedKey;
 
     public NeoArtisan() {
         super();
         instance = this;
-        artisanItemKey = new NamespacedKey(this, "registryId");
+        artisanItemIdKey = new NamespacedKey(this, "registry_id");
+        artisanItemAttackDamageKey = new NamespacedKey("minecraft", "base_attack_damage");
+        artisanItemAttackKnockbackKey = new NamespacedKey("minecraft", "base_attack_knockback");
+        artisanItemAttackSpeedKey = new NamespacedKey("minecraft", "base_attack_speed");
+//        artisanItemAttackDamageKey = new NamespacedKey(this, "artisan_attack_damage");
+//        artisanItemAttackKnockbackKey = new NamespacedKey(this, "artisan_attack_knockback");
+//        artisanItemAttackSpeedKey = new NamespacedKey(this, "artisan_attack_speed");
     }
 
-    public static NamespacedKey getArtisanItemKey() {
-        return artisanItemKey;
+    public static NamespacedKey getArtisanItemIdKey() {
+        return artisanItemIdKey;
+    }
+
+    public static NamespacedKey getArtisanItemAttackDamageKey() {
+        return artisanItemAttackDamageKey;
+    }
+
+    public static NamespacedKey getArtisanItemAttackKnockbackKey() {
+        return artisanItemAttackKnockbackKey;
+    }
+
+    public static NamespacedKey getArtisanItemAttackSpeedKey() {
+        return artisanItemAttackSpeedKey;
     }
 
     public static NeoArtisan instance() {

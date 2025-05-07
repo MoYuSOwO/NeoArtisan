@@ -1,11 +1,11 @@
 registryId: magic_sword
 rawMaterial: iron_sword
 customModelData: -1
-displayName: <blue>魔法剑~ # 默认为白色+非斜体
+displayName: <yellow>魔法剑~ # 默认为白色+非斜体
 lore: # 默认为灰色+非斜体
   - 魔法剑一把
   - 可以帮助你更快地杀怪
-attribute:
-  test: 5
-  test2: 15.8
-  test3: true
+weapon:
+  speed: 1.0
+  knockback: 1.5
+  damage: 11.0
