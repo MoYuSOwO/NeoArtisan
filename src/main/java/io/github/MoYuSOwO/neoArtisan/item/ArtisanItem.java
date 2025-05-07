@@ -39,13 +39,14 @@ public class ArtisanItem {
         this(registryId, rawMaterial, hasOriginalCraft, customModelData, toNameComponent(displayName), toLoreComponentList(lore), foodProperty);
     }
 
-    public ItemStack getItemStack(int count) {
-        ItemStack itemStack = new ItemStack(this.rawMaterial, count);
+    protected ItemStack getItemStack(int count) {
+        ItemStack itemStack = new ItemStack(this.rawMaterial);
+        itemStack.setAmount(Math.min(count, itemStack.getMaxStackSize()));
         itemStack.setItemMeta(this.itemMeta.clone());
         return itemStack;
     }
 
-    public ItemStack getItemStack() {
+    protected ItemStack getItemStack() {
         return this.getItemStack(1);
     }
 

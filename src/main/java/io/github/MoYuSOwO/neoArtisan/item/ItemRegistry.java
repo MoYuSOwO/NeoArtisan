@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,29 +70,31 @@ public final class ItemRegistry {
 
     public static boolean hasItem(@Nullable NamespacedKey registryId) {
         if (registryId == null) return false;
-        else if (hasArtisanItem(registryId)) return true;
+        else if (isArtisanItem(registryId)) return true;
         else return registryId.getNamespace().equals("minecraft") && Material.getMaterial(registryId.getKey().toUpperCase()) != null;
     }
 
     public static ItemStack getItemStack(NamespacedKey registryId, int count) {
-        if (hasArtisanItem(registryId)) return getArtisanItem(registryId).getItemStack(count);
+        if (isArtisanItem(registryId)) return getArtisanItem(registryId).getItemStack(count);
         Material material = Material.getMaterial(registryId.getKey().toUpperCase());
         if (material == null) throw new IllegalArgumentException("You should use has method to check before get!");
-        return new ItemStack(material, count);
+        ItemStack itemStack = new ItemStack(material);
+        itemStack.setAmount(Math.min(count, itemStack.getMaxStackSize()));
+        return itemStack;
     }
 
     public static ItemStack getItemStack(NamespacedKey registryId) {
         return getItemStack(registryId, 1);
     }
 
-    public static boolean hasArtisanItem(@Nullable NamespacedKey registryId) {
+    public static boolean isArtisanItem(@Nullable NamespacedKey registryId) {
         if (registryId == null) return false;
         return registry.containsKey(registryId);
     }
 
-    public static boolean hasArtisanItem(@Nullable ItemStack itemStack) {
+    public static boolean isArtisanItem(@Nullable ItemStack itemStack) {
         if (itemStack == null) return false;
-        return hasArtisanItem(getRegistryId(itemStack));
+        return isArtisanItem(getRegistryId(itemStack));
     }
 
     public static @NotNull ArtisanItem getArtisanItem(NamespacedKey registryId) {

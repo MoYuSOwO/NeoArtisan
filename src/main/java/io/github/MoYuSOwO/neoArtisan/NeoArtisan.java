@@ -5,6 +5,7 @@ import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
 import io.github.MoYuSOwO.neoArtisan.recipe.RecipeRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,6 +37,10 @@ public final class NeoArtisan extends JavaPlugin {
 
     public static void registerListener(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, instance);
+    }
+
+    public static Server server() {
+        return instance.getServer();
     }
 
     @Override
