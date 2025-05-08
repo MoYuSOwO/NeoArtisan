@@ -1,12 +1,13 @@
 package io.github.MoYuSOwO.neoArtisan.item;
 
 import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.MoYuSOwO.neoArtisan.attribute.AttributeRegistry;
+import io.github.MoYuSOwO.neoArtisan.attribute.AttributeTypeRegistry;
 import io.github.MoYuSOwO.neoArtisan.util.Util;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -47,7 +48,7 @@ public final class ReadUtil {
 
     public static NamespacedKey getRegistryId(YamlConfiguration item) {
         String registryId = item.getString("registryId");
-        if (registryId != null) return new NamespacedKey("neoartisan", registryId);
+        if (registryId != null) return new NamespacedKey(NeoArtisan.instance(), registryId);
         else throw new IllegalArgumentException("You must provide a registryId!");
     }
 
@@ -124,6 +125,48 @@ public final class ReadUtil {
             armorProperty = new ArmorProperty(armor, armorToughness, Util.toSlotOrNull(slot.toUpperCase()));
         }
         return armorProperty;
+    }
+
+    public static @NotNull AttributeProperty getAttribute(YamlConfiguration item) {
+        AttributeProperty attributeProperty = new AttributeProperty();
+        ConfigurationSection attribute = item.getConfigurationSection("attribute");
+        if (attribute != null) {
+            ConfigurationSection global = attribute.getConfigurationSection("global");
+            ConfigurationSection itemstack = attribute.getConfigurationSection("itemstack");
+            if (global != null) {
+                for (String key : global.getKeys(false)) {
+                    if (key.contains(":")) {
+                        NamespacedKey attributeKey = NamespacedKey.fromString(key);
+                        String typeName = AttributeRegistry.getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
+                    }
+                    else {
+                        NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
+                        String typeName = AttributeRegistry.getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
+                    }
+                }
+            }
+            if (itemstack != null) {
+                for (String key : itemstack.getKeys(false)) {
+                    if (key.contains(":")) {
+                        NamespacedKey attributeKey = NamespacedKey.fromString(key);
+                        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
+                    }
+                    else {
+                        NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
+                        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
+                    }
+                }
+            }
+        }
+        return attributeProperty;
     }
 
     public static boolean getOriginalCraft(YamlConfiguration item) {

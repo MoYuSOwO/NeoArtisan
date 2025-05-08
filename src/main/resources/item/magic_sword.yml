@@ -9,4 +9,12 @@ weapon:
   speed: 1.0
   knockback: 1.5
   damage: 11.0
+attribute:
+  global:
+    magic: 10.2
+    ice: 5.8
+    fire: 6.1
+  itemstack:
+    level: 1
+    exp: 5.0
 maxDurability: 5000
