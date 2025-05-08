@@ -2,12 +2,12 @@ plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id 'io.papermc.paperweight.userdev' version '2.0.0-beta.16'
-    id 'java-library'
     id 'maven-publish'
+    id 'signing'
 }
 
-group = 'io.github.MoYuSOwO'
-version = '1.0-beta'
+group = 'io.github.moyusowo'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -29,52 +29,33 @@ paperweight {
     reobfJar.enabled = true
 }
 
-sourceSets {
-    apiElements {
-        java {
-            srcDirs = ['src/main/java']
-            include 'io/github/MoYuSOwO/neoArtisan/api/**'
-            include 'io/github/MoYuSOwO/neoArtisan/record/**'
-        }
-    }
+tasks.register('apiJar', Jar) {
+    archiveClassifier = 'api'
+    from sourceSets.main.output
+    include 'io/github/moyusowo/neoartisan/api/**'
+    include 'io/github/moyusowo/neoartisan/record/**'
 }
 
-// 发布配置
 publishing {
     publications {
-        maven(MavenPublication) {
-            from components.java
-
-            // 包含哪些包（使用includes/excludes控制）
-            pom.withXml {
-                def includedPackages = ['io.github.MoYuSOwO.neoArtisan.api.**', 'io.github.MoYuSOwO.neoArtisan.record.**']
-                asNode().dependencies.dependency.each { dep ->
-                    if (!includedPackages.any { pkg -> dep.groupId.text().startsWith(pkg) }) {
-                        dep.parent().remove(dep)
-                    }
-                }
-            }
+        mavenJava(MavenPublication) {
+            artifact apiJar // 只发布API包
+            artifactId = 'neoartisan-api'
         }
     }
 
     repositories {
-        // 本地测试仓库
-        maven {
-            name = 'localRepo'
-            url = layout.buildDirectory.dir("../../repo")
-        }
+        // 本地测试仓库（生成到项目根目录/repo）
+        maven { url = layout.buildDirectory.dir("../repo") }
 
-        // 或者发布到远程仓库（示例：GitHub Packages）
-        /*
+        // 如需发布到GitHub（取消注释）
         maven {
-            name = 'github'
-            url = uri('https://maven.pkg.github.com/你的用户名/你的仓库')
+            url = uri("https://maven.pkg.github.com/MoYuSOwO/NeoArtisan")
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
         }
-        */
     }
 }
 
