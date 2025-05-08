@@ -15,7 +15,7 @@ public final class Util {
         String id = s;
         if (!id.contains(":")) id = "minecraft:" + s;
         NamespacedKey key = NamespacedKey.fromString(id);
-        if (!ItemRegistry.hasItem(key)) throw new IllegalArgumentException(s + " is not a effective registryId");
+        if (!ItemRegistry.getInstance().hasItem(key)) throw new IllegalArgumentException(s + " is not a effective registryId");
         return key;
     }
 

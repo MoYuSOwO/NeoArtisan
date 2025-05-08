@@ -1,11 +1,9 @@
-package io.github.MoYuSOwO.neoArtisan.item;
+package io.github.MoYuSOwO.neoArtisan.record.item;
 
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
 import io.github.MoYuSOwO.neoArtisan.attribute.AttributeRegistry;
 import io.github.MoYuSOwO.neoArtisan.attribute.AttributeTypeRegistry;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,18 +18,18 @@ public class AttributeProperty {
     }
 
     public void addGlobalAttribute(NamespacedKey attributeKey, Object value) {
-        if (!AttributeRegistry.hasGlobalAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
-        String typeName = AttributeRegistry.getGlobalAttributeTypeName(attributeKey);
-        Class<?> typeJavaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+        if (!AttributeRegistry.getInstance().hasGlobalAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
+        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
+        Class<?> typeJavaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
         if (!typeJavaClass.isInstance(value)) throw new IllegalArgumentException("the value doesn't match the attribute!");
         this.globalAttributeValues.put(attributeKey, value);
     }
 
     public void addItemstackAttribute(NamespacedKey attributeKey, Object value) {
         if (attributeKey == null) throw new IllegalArgumentException("You can't provide a null key!");
-        if (!AttributeRegistry.hasItemstackAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
-        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
-        Class<?> typeJavaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+        if (!AttributeRegistry.getInstance().hasItemstackAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
+        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
+        Class<?> typeJavaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
         if (!typeJavaClass.isInstance(value)) throw new IllegalArgumentException("the value doesn't match the attribute!");
         this.itemstackAttributeValues.put(attributeKey, value);
     }
@@ -46,15 +44,15 @@ public class AttributeProperty {
 
     @SuppressWarnings("unchecked")
     public @NotNull <T> T getGlobalAttributeValue(NamespacedKey attributeKey) {
-        String typeName = AttributeRegistry.getGlobalAttributeTypeName(attributeKey);
-        Class<T> type = (Class<T>) AttributeTypeRegistry.getAttributeJavaType(typeName);
+        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
+        Class<T> type = (Class<T>) AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
         return type.cast(this.globalAttributeValues.get(attributeKey));
     }
 
     @SuppressWarnings("unchecked")
-    protected @NotNull <T> T getItemstackAttributeValue(NamespacedKey attributeKey) {
-        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
-        Class<T> type = (Class<T>) AttributeTypeRegistry.getAttributeJavaType(typeName);
+    public @NotNull <T> T getItemstackAttributeValue(NamespacedKey attributeKey) {
+        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
+        Class<T> type = (Class<T>) AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
         return type.cast(this.itemstackAttributeValues.get(attributeKey));
     }
 
@@ -62,7 +60,7 @@ public class AttributeProperty {
         return this.globalAttributeValues.isEmpty() && this.itemstackAttributeValues.isEmpty();
     }
 
-    protected NamespacedKey[] getItemstackAttributeKeys() {
+    public NamespacedKey[] getItemstackAttributeKeys() {
         return this.itemstackAttributeValues.keySet().toArray(new NamespacedKey[0]);
     }
 }

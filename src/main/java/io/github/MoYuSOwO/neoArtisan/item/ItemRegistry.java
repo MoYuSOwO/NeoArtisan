@@ -1,11 +1,21 @@
 package io.github.MoYuSOwO.neoArtisan.item;
 
 import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.MoYuSOwO.neoArtisan.api.item.ArtisanItemAPI;
+import io.github.MoYuSOwO.neoArtisan.api.item.ItemRegistryAPI;
+import io.github.MoYuSOwO.neoArtisan.attribute.AttributeRegistry;
+import io.github.MoYuSOwO.neoArtisan.attribute.AttributeTypeRegistry;
+import io.github.MoYuSOwO.neoArtisan.record.item.ArmorProperty;
+import io.github.MoYuSOwO.neoArtisan.record.item.AttributeProperty;
+import io.github.MoYuSOwO.neoArtisan.record.item.FoodProperty;
+import io.github.MoYuSOwO.neoArtisan.record.item.WeaponProperty;
 import io.github.MoYuSOwO.neoArtisan.util.NamespacedKeyDataType;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,18 +26,28 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ItemRegistry {
+public final class ItemRegistry implements ItemRegistryAPI {
 
-    private static final ConcurrentHashMap<NamespacedKey, ArtisanItem> registry = new ConcurrentHashMap<>();
+    private static ItemRegistry instance;
 
-    private ItemRegistry() {}
-
-    public static void init() {
-        ItemRegistry.registerItemFromFile();
-        NeoArtisan.logger().info("成功从文件注册 " + registry.size() + " 个自定义物品");
+    public static ItemRegistry getInstance() {
+        return instance;
     }
 
-    public static void registerItemFromFile() {
+    private final ConcurrentHashMap<NamespacedKey, ArtisanItem> registry;
+
+    private ItemRegistry() {
+        registry = new ConcurrentHashMap<>();
+        registerItemFromFile();
+        NeoArtisan.logger().info("成功从文件注册 " + registry.size() + " 个自定义物品");
+        instance = this;
+    }
+
+    public static void init() {
+        new ItemRegistry();
+    }
+
+    public void registerItemFromFile() {
         File[] files = ReadUtil.readAllFiles();
         if (files != null) {
             for (File file : files) {
@@ -38,7 +58,7 @@ public final class ItemRegistry {
         }
     }
 
-    private static void readYml(YamlConfiguration item) {
+    private void readYml(YamlConfiguration item) {
         NamespacedKey registryId = ReadUtil.getRegistryId(item);
         Material rawMaterial = ReadUtil.getRawMaterial(item);
         boolean hasOriginalCraft = ReadUtil.getOriginalCraft(item);
@@ -53,13 +73,14 @@ public final class ItemRegistry {
         registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, attributeProperty);
     }
 
-    public static void registerItem(
-            NamespacedKey registryId,
-            Material rawMaterial,
+    @Override
+    public void registerItem(
+            @NotNull NamespacedKey registryId,
+            @NotNull Material rawMaterial,
             boolean hasOriginalCraft,
             @Nullable Integer customModelData,
-            String displayName,
-            List<String> lore,
+            @NotNull String displayName,
+            @NotNull List<String> lore,
             @NotNull FoodProperty foodProperty,
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
@@ -69,7 +90,7 @@ public final class ItemRegistry {
         registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, attributeProperty));
     }
 
-    public static Set<String> getAllIds() {
+    public Set<String> getAllIds() {
         Set<NamespacedKey> keySet = registry.keySet();
         Set<String> keySetString = new HashSet<>();
         for (NamespacedKey key : keySet) {
@@ -78,19 +99,22 @@ public final class ItemRegistry {
         return keySetString;
     }
 
-    public static @NotNull NamespacedKey getRegistryId(@NotNull ItemStack itemStack) {
+    @Override
+    public @NotNull NamespacedKey getRegistryId(@NotNull ItemStack itemStack) {
         if (!itemStack.getItemMeta().getPersistentDataContainer().has(NeoArtisan.getArtisanItemIdKey())) return itemStack.getType().getKey();
         NamespacedKey registryId = itemStack.getItemMeta().getPersistentDataContainer().get(NeoArtisan.getArtisanItemIdKey(), NamespacedKeyDataType.TYPE);
         return Objects.requireNonNull(registryId);
     }
 
-    public static boolean hasItem(@Nullable NamespacedKey registryId) {
+    @Override
+    public boolean hasItem(@Nullable NamespacedKey registryId) {
         if (registryId == null) return false;
         else if (isArtisanItem(registryId)) return true;
         else return registryId.getNamespace().equals("minecraft") && Material.getMaterial(registryId.getKey().toUpperCase()) != null;
     }
 
-    public static ItemStack getItemStack(NamespacedKey registryId, int count) {
+    @Override
+    public @NotNull ItemStack getItemStack(NamespacedKey registryId, int count) {
         if (isArtisanItem(registryId)) return getArtisanItem(registryId).getItemStack(count);
         Material material = Material.getMaterial(registryId.getKey().toUpperCase());
         if (material == null) throw new IllegalArgumentException("You should use has method to check before get!");
@@ -99,29 +123,69 @@ public final class ItemRegistry {
         return itemStack;
     }
 
-    public static ItemStack getItemStack(NamespacedKey registryId) {
+    @Override
+    public @NotNull ItemStack getItemStack(NamespacedKey registryId) {
         return getItemStack(registryId, 1);
     }
 
-    public static boolean isArtisanItem(@Nullable NamespacedKey registryId) {
+    @Override
+    public boolean isArtisanItem(@Nullable NamespacedKey registryId) {
         if (registryId == null) return false;
         return registry.containsKey(registryId);
     }
 
-    public static boolean isArtisanItem(@Nullable ItemStack itemStack) {
+    @Override
+    public boolean isArtisanItem(@Nullable ItemStack itemStack) {
         if (itemStack == null) return false;
         return isArtisanItem(getRegistryId(itemStack));
     }
 
-    public static @NotNull ArtisanItem getArtisanItem(NamespacedKey registryId) {
+    @Override
+    public @NotNull ArtisanItemAPI getArtisanItemAPI(@NotNull NamespacedKey registryId) {
         ArtisanItem artisanItem = registry.get(registryId);
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }
 
-    public static @NotNull ArtisanItem getArtisanItem(ItemStack itemStack) {
+    @Override
+    public @NotNull ArtisanItemAPI getArtisanItemAPI(ItemStack itemStack) {
         ArtisanItem artisanItem = registry.get(getRegistryId(itemStack));
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
+    }
+
+    public @NotNull ArtisanItem getArtisanItem(NamespacedKey registryId) {
+        ArtisanItem artisanItem = registry.get(registryId);
+        if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
+        return artisanItem;
+    }
+
+    public @NotNull ArtisanItem getArtisanItem(ItemStack itemStack) {
+        ArtisanItem artisanItem = registry.get(getRegistryId(itemStack));
+        if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
+        return artisanItem;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public @Nullable <T> T getItemstackAttributeValue(@NotNull ItemStack itemStack, @NotNull NamespacedKey attributeKey) {
+        if (itemStack.getPersistentDataContainer().has(attributeKey)) {
+            String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
+            return (T) itemStack.getPersistentDataContainer().get(attributeKey, AttributeTypeRegistry.getInstance().getAttributePDCType(typeName));
+        }
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> void setItemstackAttributeValue(@NotNull ItemStack itemStack, @NotNull NamespacedKey attributeKey, @NotNull T value) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta.getPersistentDataContainer().has(attributeKey)) {
+            meta.getPersistentDataContainer().remove(attributeKey);
+        }
+        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
+        PersistentDataType<?, T> type = (PersistentDataType<?, T>) AttributeTypeRegistry.getInstance().getAttributePDCType(typeName);
+        meta.getPersistentDataContainer().set(attributeKey, type, value);
+        itemStack.setItemMeta(meta);
     }
 }

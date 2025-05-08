@@ -3,8 +3,13 @@ package io.github.MoYuSOwO.neoArtisan.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.MoYuSOwO.neoArtisan.api.item.ArtisanItemAPI;
 import io.github.MoYuSOwO.neoArtisan.attribute.AttributeRegistry;
 import io.github.MoYuSOwO.neoArtisan.attribute.AttributeTypeRegistry;
+import io.github.MoYuSOwO.neoArtisan.record.item.ArmorProperty;
+import io.github.MoYuSOwO.neoArtisan.record.item.AttributeProperty;
+import io.github.MoYuSOwO.neoArtisan.record.item.FoodProperty;
+import io.github.MoYuSOwO.neoArtisan.record.item.WeaponProperty;
 import io.github.MoYuSOwO.neoArtisan.util.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -12,8 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -28,29 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ArtisanItem {
-
-    @SuppressWarnings("unchecked")
-    public static @Nullable <T> T getItemstackAttributeValue(@NotNull ItemStack itemStack, @NotNull NamespacedKey attributeKey) {
-        if (itemStack.getPersistentDataContainer().has(attributeKey)) {
-            String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
-            return (T) itemStack.getPersistentDataContainer().get(attributeKey, AttributeTypeRegistry.getAttributePDCType(typeName));
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> void setItemstackAttributeValue(@NotNull ItemStack itemStack, @NotNull NamespacedKey attributeKey, @NotNull T value) {
-        ItemMeta meta = itemStack.getItemMeta();
-        if (meta.getPersistentDataContainer().has(attributeKey)) {
-            meta.getPersistentDataContainer().remove(attributeKey);
-        }
-        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
-        PersistentDataType<?, T> type = (PersistentDataType<?, T>) AttributeTypeRegistry.getAttributePDCType(typeName);
-        meta.getPersistentDataContainer().set(attributeKey, type, value);
-        itemStack.setItemMeta(meta);
-    }
-
+public class ArtisanItem implements ArtisanItemAPI {
     private final NamespacedKey registryId;
     private final Material rawMaterial;
     private final boolean hasOriginalCraft;
@@ -130,45 +111,60 @@ public class ArtisanItem {
         return this.getItemStack(1);
     }
 
+    @Override
     public boolean equals(@NotNull ItemStack itemStack) {
         if (!itemStack.getItemMeta().getPersistentDataContainer().has(NeoArtisan.getArtisanItemIdKey())) return false;
         return itemStack.getItemMeta().getPersistentDataContainer().get(NeoArtisan.getArtisanItemIdKey(), NamespacedKeyDataType.TYPE).equals(this.registryId);
     }
 
+    @Override
     public boolean equals(@NotNull NamespacedKey registryId) {
         return registryId.equals(this.registryId);
     }
 
-    public NamespacedKey getRegistryId() {
+    @Override
+    public @NotNull NamespacedKey getRegistryId() {
         return this.registryId;
     }
 
-    public Material getRawMaterial() {
+    @Override
+    public @NotNull Material getRawMaterial() {
         return this.rawMaterial;
     }
 
+    @Override
     public boolean hasOriginalCraft() {
         return this.hasOriginalCraft;
     }
 
+    @Override
     public Integer getCustomModelData() {
         return this.customModelData;
     }
 
-    public FoodProperty getFoodProperty() {
+    @Override
+    public @NotNull FoodProperty getFoodProperty() {
         return this.foodProperty;
     }
 
-    public WeaponProperty getWeaponProperty() {
+    @Override
+    public @NotNull WeaponProperty getWeaponProperty() {
         return this.weaponProperty;
     }
 
+    @Override
     public Integer getMaxDurability() {
         return this.maxDurability;
     }
 
-    public AttributeProperty getAttributeProperty() {
+    @Override
+    public @NotNull AttributeProperty getAttributeProperty() {
         return this.attributeProperty;
+    }
+
+    @Override
+    public @NotNull ArmorProperty getArmorProperty() {
+        return this.armorProperty;
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -252,8 +248,8 @@ public class ArtisanItem {
         if (!this.attributeProperty.isEmpty()) {
             NamespacedKey[] keys = this.attributeProperty.getItemstackAttributeKeys();
             for (NamespacedKey key : keys) {
-                String typeName = AttributeRegistry.getItemstackAttributeTypeName(key);
-                PersistentDataType<?, ?> PDCType = AttributeTypeRegistry.getAttributePDCType(typeName);
+                String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(key);
+                PersistentDataType<?, ?> PDCType = AttributeTypeRegistry.getInstance().getAttributePDCType(typeName);
                 itemMeta.getPersistentDataContainer().set(key, PDCType, this.attributeProperty.getItemstackAttributeValue(key));
             }
         }

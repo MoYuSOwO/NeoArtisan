@@ -1,4 +1,4 @@
-package io.github.MoYuSOwO.neoArtisan.item;
+package io.github.MoYuSOwO.neoArtisan.record.item;
 
 import org.bukkit.inventory.EquipmentSlot;
 

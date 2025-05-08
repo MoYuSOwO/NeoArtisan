@@ -1,13 +1,14 @@
 package io.github.MoYuSOwO.neoArtisan.recipe;
 
 import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.MoYuSOwO.neoArtisan.api.recipe.ArtisanShapelessRecipeAPI;
 import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class ArtisanShapelessRecipe {
+public class ArtisanShapelessRecipe implements ArtisanShapelessRecipeAPI {
     private final NamespacedKey[] recipe;
     private NamespacedKey result;
     private int count;
@@ -22,7 +23,7 @@ public class ArtisanShapelessRecipe {
         Arrays.fill(inv, "");
         for (int i = 0; i < 9; i++) {
             if (matrix[i] != null) {
-                inv[i] = ItemRegistry.getRegistryId(matrix[i]).asString();
+                inv[i] = ItemRegistry.getInstance().getRegistryId(matrix[i]).asString();
             }
         }
         Arrays.sort(inv);
@@ -48,6 +49,7 @@ public class ArtisanShapelessRecipe {
         this.count = count;
     }
 
+    @Override
     public void add(NamespacedKey registryId) {
         try {
             if (built) throw new IllegalAccessException("It's already registered!");
@@ -58,6 +60,7 @@ public class ArtisanShapelessRecipe {
         recipe[i++] = registryId;
     }
 
+    @Override
     @SuppressWarnings("unused")
     public void add(NamespacedKey... registryIds) {
         try {
@@ -71,6 +74,7 @@ public class ArtisanShapelessRecipe {
         }
     }
 
+    @Override
     @SuppressWarnings("unused")
     public void setResult(NamespacedKey registryId, int count) {
         try {
@@ -82,6 +86,7 @@ public class ArtisanShapelessRecipe {
         this.count = count;
     }
 
+    @Override
     public void build() {
         try {
             if (built) throw new IllegalAccessException("It's already registered!");
@@ -101,7 +106,7 @@ public class ArtisanShapelessRecipe {
             if (!s.isEmpty()) builtRecipe.append(s);
             builtRecipe.append(",");
         }
-        RecipeRegistry.register(builtRecipe.toString(), this);
+        RecipeRegistry.getInstance().register(builtRecipe.toString(), this);
         built = true;
     }
 

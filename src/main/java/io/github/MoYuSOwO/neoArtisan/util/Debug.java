@@ -17,7 +17,7 @@ public class Debug implements Listener {
 
     public static void init() {
         NeoArtisan.registerListener(new Debug());
-        AttributeTypeRegistry.registerAttributeType("key", NamespacedKeyDataType.TYPE);
+        AttributeTypeRegistry.getInstance().registerAttributeType("key", NamespacedKeyDataType.TYPE);
     }
 
     @EventHandler
@@ -25,11 +25,11 @@ public class Debug implements Listener {
         if (event.getDamager() instanceof Player player) {
             ItemStack itemStack = player.getInventory().getItemInMainHand();
             NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), "level");
-            Integer level = ArtisanItem.getItemstackAttributeValue(itemStack, attributeKey);
+            Integer level = ItemRegistry.getInstance().getItemstackAttributeValue(itemStack, attributeKey);
             System.out.println(level);
             if (level != null) {
                 level++;
-                ArtisanItem.setItemstackAttributeValue(itemStack, attributeKey, level);
+                ItemRegistry.getInstance().setItemstackAttributeValue(itemStack, attributeKey, level);
             }
         }
     }
