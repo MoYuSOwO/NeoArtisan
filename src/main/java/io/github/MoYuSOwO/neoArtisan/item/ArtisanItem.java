@@ -3,6 +3,8 @@ package io.github.MoYuSOwO.neoArtisan.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.MoYuSOwO.neoArtisan.attribute.AttributeRegistry;
+import io.github.MoYuSOwO.neoArtisan.attribute.AttributeTypeRegistry;
 import io.github.MoYuSOwO.neoArtisan.util.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.bukkit.inventory.meta.components.FoodComponent;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +29,28 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class ArtisanItem {
+
+    @SuppressWarnings("unchecked")
+    public static @Nullable <T> T getItemstackAttributeValue(@NotNull ItemStack itemStack, @NotNull NamespacedKey attributeKey) {
+        if (itemStack.getPersistentDataContainer().has(attributeKey)) {
+            String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
+            return (T) itemStack.getPersistentDataContainer().get(attributeKey, AttributeTypeRegistry.getAttributePDCType(typeName));
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> void setItemstackAttributeValue(@NotNull ItemStack itemStack, @NotNull NamespacedKey attributeKey, @NotNull T value) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta.getPersistentDataContainer().has(attributeKey)) {
+            meta.getPersistentDataContainer().remove(attributeKey);
+        }
+        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
+        PersistentDataType<?, T> type = (PersistentDataType<?, T>) AttributeTypeRegistry.getAttributePDCType(typeName);
+        meta.getPersistentDataContainer().set(attributeKey, type, value);
+        itemStack.setItemMeta(meta);
+    }
+
     private final NamespacedKey registryId;
     private final Material rawMaterial;
     private final boolean hasOriginalCraft;
@@ -36,6 +61,7 @@ public class ArtisanItem {
     private final WeaponProperty weaponProperty;
     private final Integer maxDurability;
     private final ArmorProperty armorProperty;
+    private final AttributeProperty attributeProperty;
     private final ItemMeta itemMeta;
 
     protected ArtisanItem(
@@ -48,7 +74,8 @@ public class ArtisanItem {
             @NotNull FoodProperty foodProperty,
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
-            @NotNull ArmorProperty armorProperty
+            @NotNull ArmorProperty armorProperty,
+            @NotNull AttributeProperty attributeProperty
     ) {
         this.registryId = registryId;
         this.rawMaterial = rawMaterial;
@@ -60,6 +87,7 @@ public class ArtisanItem {
         this.weaponProperty = weaponProperty;
         this.maxDurability = maxDurability;
         this.armorProperty = armorProperty;
+        this.attributeProperty = attributeProperty;
         this.itemMeta = createNewItemMeta();
     }
 
@@ -73,7 +101,8 @@ public class ArtisanItem {
             @NotNull FoodProperty foodProperty,
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
-            @NotNull ArmorProperty armorProperty
+            @NotNull ArmorProperty armorProperty,
+            @NotNull AttributeProperty attributeProperty
     ) {
         this(
                 registryId,
@@ -85,7 +114,8 @@ public class ArtisanItem {
                 foodProperty,
                 weaponProperty,
                 maxDurability,
-                armorProperty
+                armorProperty,
+                attributeProperty
         );
     }
 
@@ -135,6 +165,10 @@ public class ArtisanItem {
 
     public Integer getMaxDurability() {
         return this.maxDurability;
+    }
+
+    public AttributeProperty getAttributeProperty() {
+        return this.attributeProperty;
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -214,6 +248,14 @@ public class ArtisanItem {
         }
         if (this.maxDurability != null && (itemMeta instanceof Damageable)) {
             ((Damageable) itemMeta).setMaxDamage(this.maxDurability);
+        }
+        if (!this.attributeProperty.isEmpty()) {
+            NamespacedKey[] keys = this.attributeProperty.getItemstackAttributeKeys();
+            for (NamespacedKey key : keys) {
+                String typeName = AttributeRegistry.getItemstackAttributeTypeName(key);
+                PersistentDataType<?, ?> PDCType = AttributeTypeRegistry.getAttributePDCType(typeName);
+                itemMeta.getPersistentDataContainer().set(key, PDCType, this.attributeProperty.getItemstackAttributeValue(key));
+            }
         }
         itemMeta.setAttributeModifiers(modifiers);
         return itemMeta;

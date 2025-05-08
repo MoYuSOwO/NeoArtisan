@@ -24,7 +24,6 @@ public final class ItemRegistry {
 
     public static void init() {
         ItemRegistry.registerItemFromFile();
-        ItemBehavior.init();
         NeoArtisan.logger().info("成功从文件注册 " + registry.size() + " 个自定义物品");
     }
 
@@ -50,7 +49,8 @@ public final class ItemRegistry {
         WeaponProperty weaponProperty = ReadUtil.getWeapon(item);
         Integer maxDurability = ReadUtil.getMaxDurability(item);
         ArmorProperty armorProperty = ReadUtil.getArmor(item);
-        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty);
+        AttributeProperty attributeProperty = ReadUtil.getAttribute(item);
+        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, attributeProperty);
     }
 
     public static void registerItem(
@@ -63,9 +63,10 @@ public final class ItemRegistry {
             @NotNull FoodProperty foodProperty,
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
-            @NotNull ArmorProperty armorProperty
+            @NotNull ArmorProperty armorProperty,
+            @NotNull AttributeProperty attributeProperty
     ) {
-        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty));
+        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, attributeProperty));
     }
 
     public static Set<String> getAllIds() {

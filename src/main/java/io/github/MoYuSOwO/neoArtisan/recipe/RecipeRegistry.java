@@ -27,8 +27,8 @@ public final class RecipeRegistry implements Listener {
     public static void init() {
         registerListener();
         registerFromFile();
-        NeoArtisan.logger().info("成功注册 " + shapedRegistry.size() + " 个自定义有序配方");
-        NeoArtisan.logger().info("成功注册 " + shapelessRegistry.size() + " 个自定义无序配方");
+        NeoArtisan.logger().info("成功从文件注册 " + shapedRegistry.size() + " 个自定义有序配方");
+        NeoArtisan.logger().info("成功从文件注册 " + shapelessRegistry.size() + " 个自定义无序配方");
     }
 
     private RecipeRegistry() {}

@@ -1,8 +1,10 @@
 package io.github.MoYuSOwO.neoArtisan;
 
+import io.github.MoYuSOwO.neoArtisan.attribute.AttributeRegistry;
 import io.github.MoYuSOwO.neoArtisan.item.ItemCommandRegistrar;
 import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
 import io.github.MoYuSOwO.neoArtisan.recipe.RecipeRegistry;
+import io.github.MoYuSOwO.neoArtisan.util.Debug;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
@@ -24,9 +26,6 @@ public final class NeoArtisan extends JavaPlugin {
         artisanItemAttackDamageKey = new NamespacedKey("minecraft", "base_attack_damage");
         artisanItemAttackKnockbackKey = new NamespacedKey("minecraft", "base_attack_knockback");
         artisanItemAttackSpeedKey = new NamespacedKey("minecraft", "base_attack_speed");
-//        artisanItemAttackDamageKey = new NamespacedKey(this, "artisan_attack_damage");
-//        artisanItemAttackKnockbackKey = new NamespacedKey(this, "artisan_attack_knockback");
-//        artisanItemAttackSpeedKey = new NamespacedKey(this, "artisan_attack_speed");
     }
 
     public static NamespacedKey getArtisanItemIdKey() {
@@ -63,9 +62,11 @@ public final class NeoArtisan extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        AttributeRegistry.init();
         ItemRegistry.init();
         ItemCommandRegistrar.registerCommands();
         RecipeRegistry.init();
+        Debug.init();
     }
 
     @Override
