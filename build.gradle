@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    id("com.gradleup.shadow") version "9.0.0-beta9"
     id 'io.papermc.paperweight.userdev' version '2.0.0-beta.16'
 }
 
@@ -29,6 +30,9 @@ paperweight {
     reobfJar.enabled = true
 }
 
+shadowJar {
+    minimize()
+}
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
