@@ -31,7 +31,7 @@ paperweight {
 
 tasks.register('apiJavadoc', Javadoc) {
 
-    source = fileTree('src/main/java') {
+    source = sourceSets.main.allJava.matching {
         include 'io/github/moyusowo/neoartisan/**'
     }
 
