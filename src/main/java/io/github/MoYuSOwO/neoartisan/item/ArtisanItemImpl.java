@@ -221,26 +221,30 @@ public class ArtisanItemImpl implements ArtisanItem {
             EquippableComponent equippableComponent = itemMeta.getEquippable();
             equippableComponent.setSlot(this.armorProperty.slot());
             itemMeta.setEquippable(equippableComponent);
-            modifiers.removeAll(Attribute.ARMOR);
-            modifiers.removeAll(Attribute.ARMOR_TOUGHNESS);
-            modifiers.put(
-                    Attribute.ARMOR,
-                    new AttributeModifier(
-                            this.registryId,
-                            this.armorProperty.armor(),
-                            AttributeModifier.Operation.ADD_NUMBER,
-                            this.armorProperty.slot().getGroup()
-                    )
-            );
-            modifiers.put(
-                    Attribute.ARMOR_TOUGHNESS,
-                    new AttributeModifier(
-                            this.registryId,
-                            this.armorProperty.armorToughness(),
-                            AttributeModifier.Operation.ADD_NUMBER,
-                            this.armorProperty.slot().getGroup()
-                    )
-            );
+            if (this.armorProperty.armor() != null) {
+                modifiers.removeAll(Attribute.ARMOR);
+                modifiers.put(
+                        Attribute.ARMOR,
+                        new AttributeModifier(
+                                this.registryId,
+                                this.armorProperty.armor(),
+                                AttributeModifier.Operation.ADD_NUMBER,
+                                this.armorProperty.slot().getGroup()
+                        )
+                );
+            }
+            if (this.armorProperty.armorToughness() != null) {
+                modifiers.removeAll(Attribute.ARMOR_TOUGHNESS);
+                modifiers.put(
+                        Attribute.ARMOR_TOUGHNESS,
+                        new AttributeModifier(
+                                this.registryId,
+                                this.armorProperty.armorToughness(),
+                                AttributeModifier.Operation.ADD_NUMBER,
+                                this.armorProperty.slot().getGroup()
+                        )
+                );
+            }
         }
         if (this.maxDurability != null && (itemMeta instanceof Damageable)) {
             ((Damageable) itemMeta).setMaxDamage(this.maxDurability);
