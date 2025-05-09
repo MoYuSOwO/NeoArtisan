@@ -1,9 +1,8 @@
-package io.github.MoYuSOwO.neoArtisan.util;
+package io.github.moyusowo.neoartisan.util;
 
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
-import io.github.MoYuSOwO.neoArtisan.attribute.AttributeTypeRegistry;
-import io.github.MoYuSOwO.neoArtisan.item.ArtisanItem;
-import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
+import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisan.item.ItemRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,7 +16,6 @@ public class Debug implements Listener {
 
     public static void init() {
         NeoArtisan.registerListener(new Debug());
-        AttributeTypeRegistry.registerAttributeType("key", NamespacedKeyDataType.TYPE);
     }
 
     @EventHandler
@@ -25,11 +23,11 @@ public class Debug implements Listener {
         if (event.getDamager() instanceof Player player) {
             ItemStack itemStack = player.getInventory().getItemInMainHand();
             NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), "level");
-            Integer level = ArtisanItem.getItemstackAttributeValue(itemStack, attributeKey);
+            Integer level = ItemRegistry.getInstance().getItemstackAttributeValue(itemStack, attributeKey);
             System.out.println(level);
             if (level != null) {
                 level++;
-                ArtisanItem.setItemstackAttributeValue(itemStack, attributeKey, level);
+                ItemRegistry.getInstance().setItemstackAttributeValue(itemStack, attributeKey, level);
             }
         }
     }

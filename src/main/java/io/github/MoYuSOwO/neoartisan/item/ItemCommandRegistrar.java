@@ -1,10 +1,10 @@
-package io.github.MoYuSOwO.neoArtisan.item;
+package io.github.moyusowo.neoartisan.item;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.moyusowo.neoartisan.NeoArtisan;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -20,7 +20,7 @@ public final class ItemCommandRegistrar {
     private static final SuggestionProvider<CommandSourceStack> REGISTRY_ID_SUGGESTIONS =
             (ctx, builder) -> {
                 String currentInput = builder.getRemaining().toLowerCase();
-                ItemRegistry.getAllIds().stream()
+                ItemRegistry.getInstance().getAllIds().stream()
                         .filter(id -> id.toLowerCase().startsWith(currentInput))
                         .forEach(builder::suggest);
                 return builder.buildFuture();
@@ -35,7 +35,7 @@ public final class ItemCommandRegistrar {
                                             ctx -> {
                                                 if (ctx.getSource().getSender() instanceof Player player) {
                                                     NamespacedKey registryId = ctx.getArgument("registryId", NamespacedKey.class);
-                                                    player.give(ItemRegistry.getArtisanItem(registryId).getItemStack());
+                                                    player.give((ItemRegistry.getInstance().getArtisanItem(registryId)).getItemStack());
                                                     return 1;
                                                 }
                                                 ctx.getSource().getSender().sendMessage(
@@ -52,7 +52,7 @@ public final class ItemCommandRegistrar {
                                                         if (ctx.getSource().getSender() instanceof Player player) {
                                                             NamespacedKey registryId = ctx.getArgument("registryId", NamespacedKey.class);
                                                             int count = IntegerArgumentType.getInteger(ctx, "count");
-                                                            player.give(ItemRegistry.getArtisanItem(registryId).getItemStack(count));
+                                                            player.give(ItemRegistry.getInstance().getArtisanItem(registryId).getItemStack(count));
                                                             return 1;
                                                         }
                                                         ctx.getSource().getSender().sendMessage(

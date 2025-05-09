@@ -1,8 +1,11 @@
-package io.github.MoYuSOwO.neoArtisan.recipe;
+package io.github.moyusowo.neoartisan.recipe;
 
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
-import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
-import io.github.MoYuSOwO.neoArtisan.util.Util;
+import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipeAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipeAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.RecipeRegistryAPI;
+import io.github.moyusowo.neoartisan.item.ItemRegistry;
+import io.github.moyusowo.neoartisan.util.Util;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Furnace;
@@ -13,30 +16,60 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class RecipeRegistry implements Listener {
+public final class RecipeRegistry implements Listener, RecipeRegistryAPI {
 
-    public static void registerListener() {
-        NeoArtisan.registerListener(new RecipeRegistry());
+    private static RecipeRegistry instance;
+
+    public static RecipeRegistry getInstance() {
+        return instance;
     }
 
     public static void init() {
+        new RecipeRegistry();
+    }
+
+    private RecipeRegistry() {
+        instance = this;
+        shapedRegistry = new ConcurrentHashMap<>();
+        shapelessRegistry = new ConcurrentHashMap<>();
         registerListener();
         registerFromFile();
         NeoArtisan.logger().info("成功从文件注册 " + shapedRegistry.size() + " 个自定义有序配方");
         NeoArtisan.logger().info("成功从文件注册 " + shapelessRegistry.size() + " 个自定义无序配方");
     }
 
-    private RecipeRegistry() {}
+    private final ConcurrentHashMap<String, ArtisanShapedRecipe> shapedRegistry;
+    private final ConcurrentHashMap<String, ArtisanShapelessRecipe> shapelessRegistry;
 
-    private static final ConcurrentHashMap<String, ArtisanShapedRecipe> shapedRegistry = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, ArtisanShapelessRecipe> shapelessRegistry = new ConcurrentHashMap<>();
+    @Override
+    @NotNull
+    public ArtisanShapedRecipeAPI createShapedRecipe(@NotNull String line1, @NotNull String line2, @NotNull String line3) {
+        return new ArtisanShapedRecipe(line1, line2, line3);
+    }
 
-    public static void registerFromFile() {
+    @Override
+    @NotNull
+    public ArtisanShapelessRecipeAPI createShapelessRecipe() {
+        return new ArtisanShapelessRecipe();
+    }
+
+    @Override
+    @NotNull
+    public ArtisanShapelessRecipeAPI createShapelessRecipe(NamespacedKey result, int count) {
+        return new ArtisanShapelessRecipe(result, count);
+    }
+
+    public void registerListener() {
+        NeoArtisan.registerListener(instance);
+    }
+
+    public void registerFromFile() {
         File[] files = ReadUtil.readAllFiles();
         if (files != null) {
             for (File file : files) {
@@ -47,13 +80,13 @@ public final class RecipeRegistry implements Listener {
         }
     }
 
-    private static void readYml(YamlConfiguration yml) {
+    private void readYml(YamlConfiguration yml) {
         String recipeType = ReadUtil.getRecipeType(yml);
         if (recipeType.equals("shaped")) readShaped(yml);
         else if (recipeType.equals("shapeless")) readShapeless(yml);
     }
 
-    private static void readShaped(YamlConfiguration yml) {
+    private void readShaped(YamlConfiguration yml) {
         List<String> shape = ReadUtil.getShaped(yml);
         ArtisanShapedRecipe r = new ArtisanShapedRecipe(shape.get(0), shape.get(1), shape.get(2));
         for (Map.Entry<Character, String> entry : ReadUtil.getShapedMappings(yml).entrySet()) {
@@ -63,7 +96,7 @@ public final class RecipeRegistry implements Listener {
         r.build();
     }
 
-    private static void readShapeless(YamlConfiguration yml) {
+    private void readShapeless(YamlConfiguration yml) {
         List<String> items = ReadUtil.getShapelessItems(yml);
         ArtisanShapelessRecipe r = new ArtisanShapelessRecipe(Util.stringToNamespaceKey(ReadUtil.getResult(yml)), ReadUtil.getCount(yml));
         for (String item : items) {
@@ -72,23 +105,23 @@ public final class RecipeRegistry implements Listener {
         r.build();
     }
 
-    static void register(String identifier, ArtisanShapedRecipe r) {
+    void register(String identifier, ArtisanShapedRecipe r) {
         shapedRegistry.put(identifier, r);
     }
 
-    static void register(String identifier, ArtisanShapelessRecipe r) {
+    void register(String identifier, ArtisanShapelessRecipe r) {
         shapelessRegistry.put(identifier, r);
     }
 
     @EventHandler
-    private static void onPrepareItemCraft(PrepareItemCraftEvent event) {
+    private void onPrepareItemCraft(PrepareItemCraftEvent event) {
         CraftingInventory inventory = event.getInventory();
         ItemStack[] matrix = inventory.getMatrix();
         if (event.getRecipe() != null) {
             for (int i = 0; i < 9; i++) {
                 if (matrix[i] == null) continue;
-                NamespacedKey registryId = ItemRegistry.getRegistryId(matrix[i]);
-                if (ItemRegistry.isArtisanItem(registryId) && (!ItemRegistry.getArtisanItem(registryId).hasOriginalCraft())) {
+                NamespacedKey registryId = ItemRegistry.getInstance().getRegistryId(matrix[i]);
+                if (ItemRegistry.getInstance().isArtisanItem(registryId) && (!ItemRegistry.getInstance().getArtisanItemAPI(registryId).hasOriginalCraft())) {
                     event.getInventory().setResult(null);
                     break;
                 } else {
@@ -99,18 +132,18 @@ public final class RecipeRegistry implements Listener {
         String shapedRegistryKey = ArtisanShapedRecipe.toRegistryKey(matrix);
         if (shapedRegistry.containsKey(shapedRegistryKey)) {
             ArtisanShapedRecipe r = shapedRegistry.get(shapedRegistryKey);
-            event.getInventory().setResult(ItemRegistry.getItemStack(r.getResult(), r.getCount()));
+            event.getInventory().setResult(ItemRegistry.getInstance().getItemStack(r.getResult(), r.getCount()));
         } else {
             String shapelessRegistryKey = ArtisanShapelessRecipe.toRegistryKey(matrix);
             if (shapelessRegistry.containsKey(shapelessRegistryKey)) {
                 ArtisanShapelessRecipe r = shapelessRegistry.get(shapelessRegistryKey);
-                event.getInventory().setResult(ItemRegistry.getItemStack(r.getResult(), r.getCount()));
+                event.getInventory().setResult(ItemRegistry.getInstance().getItemStack(r.getResult(), r.getCount()));
             }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    private static void onItemCraft(InventoryClickEvent event) {
+    private void onItemCraft(InventoryClickEvent event) {
         if (event.isCancelled()) return;
         if (!(event.getClickedInventory() instanceof CraftingInventory inventory)) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
@@ -165,34 +198,34 @@ public final class RecipeRegistry implements Listener {
     }
 
     @EventHandler
-    private static void onAnvil(PrepareAnvilEvent event) {
+    private void onAnvil(PrepareAnvilEvent event) {
         if (event.getResult() == null) return;
         ItemStack firstItem = event.getInventory().getFirstItem();
         ItemStack secondItem = event.getInventory().getSecondItem();
-        if (ItemRegistry.isArtisanItem(firstItem)) {
+        if (ItemRegistry.getInstance().isArtisanItem(firstItem)) {
             event.setResult(null);
             return;
         }
-        if (ItemRegistry.isArtisanItem(secondItem)) {
+        if (ItemRegistry.getInstance().isArtisanItem(secondItem)) {
             event.setResult(null);
         }
     }
 
     @EventHandler
-    private static void onFurnace(FurnaceBurnEvent event) {
+    private void onFurnace(FurnaceBurnEvent event) {
         if (event.isCancelled()) return;
         Furnace furnace = (Furnace) event.getBlock().getState();
         ItemStack fuel = furnace.getSnapshotInventory().getFuel();
         ItemStack smelting = furnace.getSnapshotInventory().getSmelting();
-        if ((ItemRegistry.isArtisanItem(smelting)) || (ItemRegistry.isArtisanItem(fuel))) {
+        if ((ItemRegistry.getInstance().isArtisanItem(smelting)) || (ItemRegistry.getInstance().isArtisanItem(fuel))) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    private static void onSmithing(PrepareSmithingEvent event) {
+    private void onSmithing(PrepareSmithingEvent event) {
         if (event.getInventory().getInputEquipment() == null) return;
-        if (ItemRegistry.isArtisanItem(event.getInventory().getInputEquipment())) event.setResult(null);
+        if (ItemRegistry.getInstance().isArtisanItem(event.getInventory().getInputEquipment())) event.setResult(null);
     }
 
 }

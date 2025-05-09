@@ -1,6 +1,6 @@
-package io.github.MoYuSOwO.neoArtisan.attribute;
+package io.github.moyusowo.neoartisan.attribute;
 
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
+import io.github.moyusowo.neoartisan.NeoArtisan;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

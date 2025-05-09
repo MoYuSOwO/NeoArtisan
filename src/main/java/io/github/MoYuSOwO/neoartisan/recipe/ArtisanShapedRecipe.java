@@ -1,7 +1,8 @@
-package io.github.MoYuSOwO.neoArtisan.recipe;
+package io.github.moyusowo.neoartisan.recipe;
 
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
-import io.github.MoYuSOwO.neoArtisan.item.ItemRegistry;
+import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipeAPI;
+import io.github.moyusowo.neoartisan.item.ItemRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArtisanShapedRecipe {
+public class ArtisanShapedRecipe implements ArtisanShapedRecipeAPI {
     private final Map<Character, NamespacedKey> toRegistryId;
     private final char[] recipe;
     private NamespacedKey result;
@@ -20,7 +21,7 @@ public class ArtisanShapedRecipe {
         StringBuilder builtRecipe = new StringBuilder();
         for (int i = 0; i < 9; i++) {
             if (matrix[i] != null) {
-                builtRecipe.append(ItemRegistry.getRegistryId(matrix[i]));
+                builtRecipe.append(ItemRegistry.getInstance().getRegistryId(matrix[i]));
             }
             builtRecipe.append(",");
         }
@@ -43,7 +44,8 @@ public class ArtisanShapedRecipe {
         this.built = false;
     }
 
-    public void add(char c, NamespacedKey registryId) {
+    @Override
+    public void add(char c, @NotNull NamespacedKey registryId) {
         try {
             if (built) throw new IllegalAccessException("It's already registered!");
         } catch (IllegalAccessException e) {
@@ -52,7 +54,8 @@ public class ArtisanShapedRecipe {
         toRegistryId.put(c, registryId);
     }
 
-    public void setResult(NamespacedKey result, int count) {
+    @Override
+    public void setResult(@NotNull NamespacedKey result, int count) {
         try {
             if (built) throw new IllegalAccessException("It's already registered!");
         } catch (IllegalAccessException e) {
@@ -62,6 +65,7 @@ public class ArtisanShapedRecipe {
         this.count = count;
     }
 
+    @Override
     public void build() {
         try {
             if (built) throw new IllegalAccessException("It's already registered!");
@@ -73,7 +77,7 @@ public class ArtisanShapedRecipe {
             if (recipe[i] != ' ') builtRecipe.append(toRegistryId.get(recipe[i]).asString());
             builtRecipe.append(",");
         }
-        RecipeRegistry.register(builtRecipe.toString(), this);
+        RecipeRegistry.getInstance().register(builtRecipe.toString(), this);
         this.built = true;
     }
 

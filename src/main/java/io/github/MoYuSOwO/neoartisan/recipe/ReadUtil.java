@@ -1,7 +1,6 @@
-package io.github.MoYuSOwO.neoArtisan.recipe;
+package io.github.moyusowo.neoartisan.recipe;
 
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
-import org.bukkit.NamespacedKey;
+import io.github.moyusowo.neoartisan.NeoArtisan;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

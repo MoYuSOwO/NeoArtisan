@@ -1,11 +1,12 @@
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    id("com.gradleup.shadow") version "9.0.0-beta9"
     id 'io.papermc.paperweight.userdev' version '2.0.0-beta.16'
 }
 
-group = 'io.github.MoYuSOwO'
-version = '1.0-beta'
+group = 'io.github.moyusowo'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -17,15 +18,31 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
+    implementation 'com.github.MoYuSOwO:NeoArtisanAPI:v1.1:api'
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 }
 
 paperweight {
     reobfJar.enabled = true
 }
+
+shadowJar {
+    minimize()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = "UTF-8"
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
 
 tasks {
     runServer {

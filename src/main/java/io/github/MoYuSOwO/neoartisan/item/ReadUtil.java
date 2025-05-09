@@ -1,9 +1,12 @@
-package io.github.MoYuSOwO.neoArtisan.item;
+package io.github.moyusowo.neoartisan.item;
 
-import io.github.MoYuSOwO.neoArtisan.NeoArtisan;
-import io.github.MoYuSOwO.neoArtisan.attribute.AttributeRegistry;
-import io.github.MoYuSOwO.neoArtisan.attribute.AttributeTypeRegistry;
-import io.github.MoYuSOwO.neoArtisan.util.Util;
+import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
+import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisanapi.api.item.ArmorProperty;
+import io.github.moyusowo.neoartisanapi.api.item.FoodProperty;
+import io.github.moyusowo.neoartisanapi.api.item.WeaponProperty;
+import io.github.moyusowo.neoartisan.util.Util;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -137,14 +140,14 @@ public final class ReadUtil {
                 for (String key : global.getKeys(false)) {
                     if (key.contains(":")) {
                         NamespacedKey attributeKey = NamespacedKey.fromString(key);
-                        String typeName = AttributeRegistry.getGlobalAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
                     }
                     else {
                         NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
-                        String typeName = AttributeRegistry.getGlobalAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
                     }
                 }
@@ -153,14 +156,14 @@ public final class ReadUtil {
                 for (String key : itemstack.getKeys(false)) {
                     if (key.contains(":")) {
                         NamespacedKey attributeKey = NamespacedKey.fromString(key);
-                        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
                     }
                     else {
                         NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
-                        String typeName = AttributeRegistry.getItemstackAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
                     }
                 }
