@@ -32,8 +32,11 @@ paperweight {
 tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'
     from sourceSets.main.output
+    from javadoc.destinationDir
     include 'io/github/moyusowo/neoartisan/api/**'
     include 'io/github/moyusowo/neoartisan/record/**'
+
+    dependsOn javadoc
 }
 
 publishing {
