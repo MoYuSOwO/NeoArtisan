@@ -8,19 +8,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class AttributeTypeRegistry implements AttributeTypeRegistryAPI {
+public final class AttributeTypeRegistryImpl implements AttributeTypeRegistryAPI {
 
-    private static AttributeTypeRegistry instance;
+    private static AttributeTypeRegistryImpl instance;
 
     public static void init() {
-        new AttributeTypeRegistry();
+        new AttributeTypeRegistryImpl();
     }
 
-    public static AttributeTypeRegistry getInstance() {
+    public static AttributeTypeRegistryImpl getInstance() {
         return instance;
     }
 
-    private AttributeTypeRegistry() {
+    private AttributeTypeRegistryImpl() {
         attributeTypeRegistry = new HashMap<>();
         attributeTypeRegistry.put("int", PersistentDataType.INTEGER);
         attributeTypeRegistry.put("integer", PersistentDataType.INTEGER);

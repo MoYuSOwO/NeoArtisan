@@ -1,6 +1,6 @@
 name: NeoArtisan
-version: '1.0-beta'
+version: '1.1.0'
 main: io.github.moyusowo.neoartisan.NeoArtisan
-api-version: '1.21'
+api-version: '1.21.4'
 authors: [ MoYuOwO ]
 description: aaa

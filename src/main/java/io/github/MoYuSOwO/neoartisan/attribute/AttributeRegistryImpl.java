@@ -10,13 +10,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class AttributeRegistry implements AttributeRegistryAPI {
+public final class AttributeRegistryImpl implements AttributeRegistryAPI {
 
     public static void init() {
-        new AttributeRegistry();
+        new AttributeRegistryImpl();
     }
 
-    private AttributeRegistry() {
+    private AttributeRegistryImpl() {
         globalAttributeRegistry = new HashMap<>();
         itemstackAttributeRegistry = new HashMap<>();
         instance = this;
@@ -26,9 +26,9 @@ public final class AttributeRegistry implements AttributeRegistryAPI {
 
     private final Map<NamespacedKey, String> globalAttributeRegistry, itemstackAttributeRegistry;
 
-    private static AttributeRegistry instance;
+    private static AttributeRegistryImpl instance;
 
-    public static AttributeRegistry getInstance() {
+    public static AttributeRegistryImpl getInstance() {
         return instance;
     }
 
@@ -40,7 +40,7 @@ public final class AttributeRegistry implements AttributeRegistryAPI {
             YamlConfiguration global = YamlConfiguration.loadConfiguration(globalFile);
             for (String key : global.getKeys(false)) {
                 String value = global.getString(key);
-                if (!AttributeTypeRegistry.getInstance().hasAttributeType(value)) throw new IllegalArgumentException("You must provide a legal type name!");
+                if (!AttributeTypeRegistryImpl.getInstance().hasAttributeType(value)) throw new IllegalArgumentException("You must provide a legal type name!");
                 globalAttributeRegistry.put(new NamespacedKey(NeoArtisan.instance(), key), value);
             }
         }
@@ -48,7 +48,7 @@ public final class AttributeRegistry implements AttributeRegistryAPI {
             YamlConfiguration attribute = YamlConfiguration.loadConfiguration(itemstackFile);
             for (String key : attribute.getKeys(false)) {
                 String value = attribute.getString(key);
-                if (!AttributeTypeRegistry.getInstance().hasAttributeType(value)) throw new IllegalArgumentException("You must provide a legal type name!");
+                if (!AttributeTypeRegistryImpl.getInstance().hasAttributeType(value)) throw new IllegalArgumentException("You must provide a legal type name!");
                 itemstackAttributeRegistry.put(new NamespacedKey(NeoArtisan.instance(), key), value);
             }
         }
@@ -56,13 +56,13 @@ public final class AttributeRegistry implements AttributeRegistryAPI {
 
     @Override
     public void registerGlobalAttribute(@NotNull NamespacedKey attributeKey, @NotNull String typeName) {
-        if (!AttributeTypeRegistry.getInstance().hasAttributeType(typeName)) throw new IllegalArgumentException("You must provide a legal type name!");
+        if (!AttributeTypeRegistryImpl.getInstance().hasAttributeType(typeName)) throw new IllegalArgumentException("You must provide a legal type name!");
         globalAttributeRegistry.put(attributeKey, typeName);
     }
 
     @Override
     public void registerItemstackAttribute(@NotNull NamespacedKey attributeKey, @NotNull String typeName) {
-        if (!AttributeTypeRegistry.getInstance().hasAttributeType(typeName)) throw new IllegalArgumentException("You must provide a legal type name!");
+        if (!AttributeTypeRegistryImpl.getInstance().hasAttributeType(typeName)) throw new IllegalArgumentException("You must provide a legal type name!");
         itemstackAttributeRegistry.put(attributeKey, typeName);
     }
 

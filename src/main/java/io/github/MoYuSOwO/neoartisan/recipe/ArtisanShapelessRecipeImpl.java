@@ -2,13 +2,13 @@ package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
 import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipeAPI;
-import io.github.moyusowo.neoartisan.item.ItemRegistry;
+import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class ArtisanShapelessRecipe implements ArtisanShapelessRecipeAPI {
+public class ArtisanShapelessRecipeImpl implements ArtisanShapelessRecipeAPI {
     private final NamespacedKey[] recipe;
     private NamespacedKey result;
     private int count;
@@ -23,7 +23,7 @@ public class ArtisanShapelessRecipe implements ArtisanShapelessRecipeAPI {
         Arrays.fill(inv, "");
         for (int i = 0; i < 9; i++) {
             if (matrix[i] != null) {
-                inv[i] = ItemRegistry.getInstance().getRegistryId(matrix[i]).asString();
+                inv[i] = ItemRegistryImpl.getInstance().getRegistryId(matrix[i]).asString();
             }
         }
         Arrays.sort(inv);
@@ -36,14 +36,14 @@ public class ArtisanShapelessRecipe implements ArtisanShapelessRecipeAPI {
         return builtRecipe.toString();
     }
 
-    public ArtisanShapelessRecipe() {
+    public ArtisanShapelessRecipeImpl() {
         this.recipe = new NamespacedKey[9];
         this.i = 0;
         this.built = false;
         Arrays.fill(recipe, EMPTY);
     }
 
-    public ArtisanShapelessRecipe(NamespacedKey result, int count) {
+    public ArtisanShapelessRecipeImpl(NamespacedKey result, int count) {
         this();
         this.result = result;
         this.count = count;
@@ -106,7 +106,7 @@ public class ArtisanShapelessRecipe implements ArtisanShapelessRecipeAPI {
             if (!s.isEmpty()) builtRecipe.append(s);
             builtRecipe.append(",");
         }
-        RecipeRegistry.getInstance().register(builtRecipe.toString(), this);
+        RecipeRegistryImpl.getInstance().register(builtRecipe.toString(), this);
         built = true;
     }
 

@@ -2,8 +2,8 @@ package io.github.moyusowo.neoartisan.item;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
 import io.github.moyusowo.neoartisanapi.api.item.*;
-import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisan.attribute.AttributeRegistryImpl;
+import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistryImpl;
 import io.github.moyusowo.neoartisan.util.NamespacedKeyDataType;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -21,17 +21,17 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ItemRegistry implements ItemRegistryAPI {
+public final class ItemRegistryImpl implements ItemRegistryAPI {
 
-    private static ItemRegistry instance;
+    private static ItemRegistryImpl instance;
 
-    public static ItemRegistry getInstance() {
+    public static ItemRegistryImpl getInstance() {
         return instance;
     }
 
-    private final ConcurrentHashMap<NamespacedKey, ArtisanItem> registry;
+    private final ConcurrentHashMap<NamespacedKey, ArtisanItemImpl> registry;
 
-    private ItemRegistry() {
+    private ItemRegistryImpl() {
         registry = new ConcurrentHashMap<>();
         registerItemFromFile();
         NeoArtisan.logger().info("成功从文件注册 " + registry.size() + " 个自定义物品");
@@ -39,7 +39,7 @@ public final class ItemRegistry implements ItemRegistryAPI {
     }
 
     public static void init() {
-        new ItemRegistry();
+        new ItemRegistryImpl();
     }
 
     public void registerItemFromFile() {
@@ -64,7 +64,7 @@ public final class ItemRegistry implements ItemRegistryAPI {
         WeaponProperty weaponProperty = ReadUtil.getWeapon(item);
         Integer maxDurability = ReadUtil.getMaxDurability(item);
         ArmorProperty armorProperty = ReadUtil.getArmor(item);
-        AttributeProperty attributeProperty = ReadUtil.getAttribute(item);
+        AttributePropertyImpl attributeProperty = ReadUtil.getAttribute(item);
         registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, attributeProperty);
     }
 
@@ -82,7 +82,7 @@ public final class ItemRegistry implements ItemRegistryAPI {
             @NotNull ArmorProperty armorProperty,
             @NotNull AttributePropertyAPI attributeProperty
     ) {
-        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, (AttributeProperty) attributeProperty));
+        registry.put(registryId, new ArtisanItemImpl(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, (AttributePropertyImpl) attributeProperty));
     }
 
     public Set<String> getAllIds() {
@@ -137,26 +137,26 @@ public final class ItemRegistry implements ItemRegistryAPI {
 
     @Override
     public @NotNull ArtisanItemAPI getArtisanItemAPI(@NotNull NamespacedKey registryId) {
-        ArtisanItem artisanItem = registry.get(registryId);
+        ArtisanItemImpl artisanItem = registry.get(registryId);
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }
 
     @Override
     public @NotNull ArtisanItemAPI getArtisanItemAPI(ItemStack itemStack) {
-        ArtisanItem artisanItem = registry.get(getRegistryId(itemStack));
+        ArtisanItemImpl artisanItem = registry.get(getRegistryId(itemStack));
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }
 
-    public @NotNull ArtisanItem getArtisanItem(NamespacedKey registryId) {
-        ArtisanItem artisanItem = registry.get(registryId);
+    public @NotNull ArtisanItemImpl getArtisanItem(NamespacedKey registryId) {
+        ArtisanItemImpl artisanItem = registry.get(registryId);
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }
 
-    public @NotNull ArtisanItem getArtisanItem(ItemStack itemStack) {
-        ArtisanItem artisanItem = registry.get(getRegistryId(itemStack));
+    public @NotNull ArtisanItemImpl getArtisanItem(ItemStack itemStack) {
+        ArtisanItemImpl artisanItem = registry.get(getRegistryId(itemStack));
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }
@@ -165,8 +165,8 @@ public final class ItemRegistry implements ItemRegistryAPI {
     @SuppressWarnings("unchecked")
     public @Nullable <T> T getItemstackAttributeValue(@NotNull ItemStack itemStack, @NotNull NamespacedKey attributeKey) {
         if (itemStack.getPersistentDataContainer().has(attributeKey)) {
-            String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
-            return (T) itemStack.getPersistentDataContainer().get(attributeKey, AttributeTypeRegistry.getInstance().getAttributePDCType(typeName));
+            String typeName = AttributeRegistryImpl.getInstance().getItemstackAttributeTypeName(attributeKey);
+            return (T) itemStack.getPersistentDataContainer().get(attributeKey, AttributeTypeRegistryImpl.getInstance().getAttributePDCType(typeName));
         }
         return null;
     }
@@ -178,8 +178,8 @@ public final class ItemRegistry implements ItemRegistryAPI {
         if (meta.getPersistentDataContainer().has(attributeKey)) {
             meta.getPersistentDataContainer().remove(attributeKey);
         }
-        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
-        PersistentDataType<?, T> type = (PersistentDataType<?, T>) AttributeTypeRegistry.getInstance().getAttributePDCType(typeName);
+        String typeName = AttributeRegistryImpl.getInstance().getItemstackAttributeTypeName(attributeKey);
+        PersistentDataType<?, T> type = (PersistentDataType<?, T>) AttributeTypeRegistryImpl.getInstance().getAttributePDCType(typeName);
         meta.getPersistentDataContainer().set(attributeKey, type, value);
         itemStack.setItemMeta(meta);
     }

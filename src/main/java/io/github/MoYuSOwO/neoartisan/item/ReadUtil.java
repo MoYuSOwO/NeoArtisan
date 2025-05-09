@@ -1,8 +1,8 @@
 package io.github.moyusowo.neoartisan.item;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisan.attribute.AttributeRegistryImpl;
+import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistryImpl;
 import io.github.moyusowo.neoartisanapi.api.item.ArmorProperty;
 import io.github.moyusowo.neoartisanapi.api.item.FoodProperty;
 import io.github.moyusowo.neoartisanapi.api.item.WeaponProperty;
@@ -130,8 +130,8 @@ public final class ReadUtil {
         return armorProperty;
     }
 
-    public static @NotNull AttributeProperty getAttribute(YamlConfiguration item) {
-        AttributeProperty attributeProperty = new AttributeProperty();
+    public static @NotNull AttributePropertyImpl getAttribute(YamlConfiguration item) {
+        AttributePropertyImpl attributeProperty = new AttributePropertyImpl();
         ConfigurationSection attribute = item.getConfigurationSection("attribute");
         if (attribute != null) {
             ConfigurationSection global = attribute.getConfigurationSection("global");
@@ -140,14 +140,14 @@ public final class ReadUtil {
                 for (String key : global.getKeys(false)) {
                     if (key.contains(":")) {
                         NamespacedKey attributeKey = NamespacedKey.fromString(key);
-                        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistryImpl.getInstance().getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
                     }
                     else {
                         NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
-                        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistryImpl.getInstance().getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
                     }
                 }
@@ -156,14 +156,14 @@ public final class ReadUtil {
                 for (String key : itemstack.getKeys(false)) {
                     if (key.contains(":")) {
                         NamespacedKey attributeKey = NamespacedKey.fromString(key);
-                        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistryImpl.getInstance().getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
                     }
                     else {
                         NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
-                        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistryImpl.getInstance().getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
                         attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
                     }
                 }

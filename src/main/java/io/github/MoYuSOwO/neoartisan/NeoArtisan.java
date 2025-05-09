@@ -1,16 +1,16 @@
 package io.github.moyusowo.neoartisan;
 
-import io.github.moyusowo.neoartisan.item.AttributeProperty;
+import io.github.moyusowo.neoartisan.item.AttributePropertyImpl;
 import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistryAPI;
 import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistryAPI;
 import io.github.moyusowo.neoartisanapi.api.item.AttributePropertyAPI;
 import io.github.moyusowo.neoartisanapi.api.item.ItemRegistryAPI;
 import io.github.moyusowo.neoartisanapi.api.recipe.RecipeRegistryAPI;
-import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisan.attribute.AttributeRegistryImpl;
+import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistryImpl;
 import io.github.moyusowo.neoartisan.item.ItemCommandRegistrar;
-import io.github.moyusowo.neoartisan.item.ItemRegistry;
-import io.github.moyusowo.neoartisan.recipe.RecipeRegistry;
+import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
+import io.github.moyusowo.neoartisan.recipe.RecipeRegistryImpl;
 import io.github.moyusowo.neoartisan.util.Debug;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -70,39 +70,39 @@ public final class NeoArtisan extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        AttributeTypeRegistry.init();
-        AttributeRegistry.init();
-        ItemRegistry.init();
+        AttributeTypeRegistryImpl.init();
+        AttributeRegistryImpl.init();
+        ItemRegistryImpl.init();
         ItemCommandRegistrar.registerCommands();
-        RecipeRegistry.init();
+        RecipeRegistryImpl.init();
         Debug.init();
         Bukkit.getServicesManager().register(
                 AttributeRegistryAPI.class,
-                AttributeRegistry.getInstance(),
+                AttributeRegistryImpl.getInstance(),
                 this,
                 ServicePriority.Normal
         );
         Bukkit.getServicesManager().register(
                 AttributeTypeRegistryAPI.class,
-                AttributeTypeRegistry.getInstance(),
+                AttributeTypeRegistryImpl.getInstance(),
                 this,
                 ServicePriority.Normal
         );
         Bukkit.getServicesManager().register(
                 ItemRegistryAPI.class,
-                ItemRegistry.getInstance(),
+                ItemRegistryImpl.getInstance(),
                 this,
                 ServicePriority.Normal
         );
         Bukkit.getServicesManager().register(
                 RecipeRegistryAPI.class,
-                RecipeRegistry.getInstance(),
+                RecipeRegistryImpl.getInstance(),
                 this,
                 ServicePriority.Normal
         );
         Bukkit.getServicesManager().register(
                 AttributePropertyAPI.class,
-                new AttributeProperty(),
+                new AttributePropertyImpl(),
                 this,
                 ServicePriority.Normal
         );

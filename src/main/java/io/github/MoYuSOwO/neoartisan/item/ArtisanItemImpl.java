@@ -4,8 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.moyusowo.neoartisan.NeoArtisan;
 import io.github.moyusowo.neoartisanapi.api.item.*;
-import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisan.attribute.AttributeRegistryImpl;
+import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistryImpl;
 import io.github.moyusowo.neoartisan.util.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ArtisanItem implements ArtisanItemAPI {
+public class ArtisanItemImpl implements ArtisanItemAPI {
     private final NamespacedKey registryId;
     private final Material rawMaterial;
     private final boolean hasOriginalCraft;
@@ -38,10 +38,10 @@ public class ArtisanItem implements ArtisanItemAPI {
     private final WeaponProperty weaponProperty;
     private final Integer maxDurability;
     private final ArmorProperty armorProperty;
-    private final AttributeProperty attributeProperty;
+    private final AttributePropertyImpl attributeProperty;
     private final ItemMeta itemMeta;
 
-    protected ArtisanItem(
+    protected ArtisanItemImpl(
             NamespacedKey registryId,
             Material rawMaterial,
             boolean hasOriginalCraft,
@@ -52,7 +52,7 @@ public class ArtisanItem implements ArtisanItemAPI {
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
             @NotNull ArmorProperty armorProperty,
-            @NotNull AttributeProperty attributeProperty
+            @NotNull AttributePropertyImpl attributeProperty
     ) {
         this.registryId = registryId;
         this.rawMaterial = rawMaterial;
@@ -68,7 +68,7 @@ public class ArtisanItem implements ArtisanItemAPI {
         this.itemMeta = createNewItemMeta();
     }
 
-    protected ArtisanItem(
+    protected ArtisanItemImpl(
             NamespacedKey registryId,
             Material rawMaterial,
             boolean hasOriginalCraft,
@@ -79,7 +79,7 @@ public class ArtisanItem implements ArtisanItemAPI {
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
             @NotNull ArmorProperty armorProperty,
-            @NotNull AttributeProperty attributeProperty
+            @NotNull AttributePropertyImpl attributeProperty
     ) {
         this(
                 registryId,
@@ -158,7 +158,7 @@ public class ArtisanItem implements ArtisanItemAPI {
         return (AttributePropertyAPI) this.attributeProperty;
     }
 
-    public @NotNull AttributeProperty getOriginalAttributeProperty() {
+    public @NotNull AttributePropertyImpl getOriginalAttributeProperty() {
         return this.attributeProperty;
     }
 
@@ -248,8 +248,8 @@ public class ArtisanItem implements ArtisanItemAPI {
         if (!this.attributeProperty.isEmpty()) {
             NamespacedKey[] keys = this.attributeProperty.getItemstackAttributeKeys();
             for (NamespacedKey key : keys) {
-                String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(key);
-                PersistentDataType<?, ?> PDCType = AttributeTypeRegistry.getInstance().getAttributePDCType(typeName);
+                String typeName = AttributeRegistryImpl.getInstance().getItemstackAttributeTypeName(key);
+                PersistentDataType<?, ?> PDCType = AttributeTypeRegistryImpl.getInstance().getAttributePDCType(typeName);
                 itemMeta.getPersistentDataContainer().set(key, PDCType, this.attributeProperty.getItemstackAttributeValue(key));
             }
         }
