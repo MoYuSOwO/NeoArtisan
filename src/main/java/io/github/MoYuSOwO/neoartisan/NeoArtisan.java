@@ -1,5 +1,6 @@
 package io.github.moyusowo.neoartisan;
 
+import io.github.moyusowo.neoartisan.block.network.BlockMappingsManager;
 import io.github.moyusowo.neoartisan.item.AttributePropertyImpl;
 import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistry;
 import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistry;
@@ -75,6 +76,7 @@ public final class NeoArtisan extends JavaPlugin {
         ItemRegistryImpl.init();
         ItemCommandRegistrar.registerCommands();
         RecipeRegistryImpl.init();
+        BlockMappingsManager.init();
         Debug.init();
         Bukkit.getServicesManager().register(
                 AttributeRegistry.class,
