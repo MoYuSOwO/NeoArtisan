@@ -30,12 +30,7 @@ paperweight {
 }
 
 javadoc {
-
-    exclude '**/net/minecraft/**'
-    exclude '**/io/papermc/**'
-    exclude '**/com/mojang/**'
-    exclude '**/org/bukkit/**'
-
+    failOnError = false
 }
 
 tasks.register('apiJar', Jar) {
