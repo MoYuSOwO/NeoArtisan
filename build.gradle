@@ -29,6 +29,15 @@ paperweight {
     reobfJar.enabled = true
 }
 
+javadoc {
+
+    exclude 'net/minecraft/**'
+    exclude 'io/papermc/**'
+    exclude 'com/mojang/**'
+    exclude 'org/bukkit/**'
+
+}
+
 tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'
 
