@@ -41,9 +41,9 @@ tasks.register('apiJar', Jar) {
         include 'io/github/moyusowo/neoartisan/record/**'
     }
 
-    from(javadoc.outputs) {
-        include 'io/github/moyusowo/neoartisan/api/**'
-        include 'io/github/moyusowo/neoartisan/record/**'
+    from(javadoc.outputs.files) {
+//        include 'io/github/moyusowo/neoartisan/api/**'
+//        include 'io/github/moyusowo/neoartisan/record/**'
         into 'META-INF/javadoc'
     }
 
