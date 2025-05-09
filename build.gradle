@@ -54,10 +54,10 @@ tasks.register('apiJar', Jar) {
         into 'META-INF/javadoc'
     }
 
-    project.afterEvaluate {
+    doLast {
         def docsDir = tasks.named('apiJavadoc').get().destinationDir
         if (docsDir.exists()) {
-            logger.lifecycle("Javadoc included：${docsDir}")
+            logger.lifecycle("Javadoc included: ${docsDir}")
         } else {
             throw new GradleException("Javadoc not included")
         }
