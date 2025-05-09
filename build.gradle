@@ -29,25 +29,17 @@ paperweight {
     reobfJar.enabled = true
 }
 
-javadoc {
-    source = sourceSets.main.allJava
-
-    classpath = sourceSets.main.compileClasspath
-
-    options.encoding = 'UTF-8'
-    options.addStringOption('Xdoclint:none', '-quiet')
-
-    failOnError = false
-}
-
 tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'
 
-    from sourceSets.main.output
-    include 'io/github/moyusowo/neoartisan/api/**'
-    include 'io/github/moyusowo/neoartisan/record/**'
+    from(sourceSets.main.output) {
+        include 'io/github/moyusowo/neoartisan/api/**'
+        include 'io/github/moyusowo/neoartisan/record/**'
+    }
 
-    from(javadoc.outputs.files) {
+    from(javadoc.outputs) {
+        include 'io/github/moyusowo/neoartisan/api/**'
+        include 'io/github/moyusowo/neoartisan/record/**'
         into 'META-INF/javadoc'
     }
 
