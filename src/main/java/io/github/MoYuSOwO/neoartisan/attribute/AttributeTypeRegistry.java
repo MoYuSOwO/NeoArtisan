@@ -1,6 +1,6 @@
 package io.github.moyusowo.neoartisan.attribute;
 
-import io.github.moyusowo.neoartisan.api.attribute.AttributeTypeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistryAPI;
 import io.github.moyusowo.neoartisan.util.Todos;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;

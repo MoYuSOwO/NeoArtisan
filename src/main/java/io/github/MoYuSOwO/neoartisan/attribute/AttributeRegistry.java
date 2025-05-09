@@ -1,7 +1,7 @@
 package io.github.moyusowo.neoartisan.attribute;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.api.attribute.AttributeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistryAPI;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

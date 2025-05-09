@@ -1,14 +1,9 @@
 package io.github.moyusowo.neoartisan.item;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.api.item.ArtisanItemAPI;
-import io.github.moyusowo.neoartisan.api.item.ItemRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.item.*;
 import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
 import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
-import io.github.moyusowo.neoartisan.record.item.ArmorProperty;
-import io.github.moyusowo.neoartisan.record.item.AttributeProperty;
-import io.github.moyusowo.neoartisan.record.item.FoodProperty;
-import io.github.moyusowo.neoartisan.record.item.WeaponProperty;
 import io.github.moyusowo.neoartisan.util.NamespacedKeyDataType;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -85,9 +80,9 @@ public final class ItemRegistry implements ItemRegistryAPI {
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
             @NotNull ArmorProperty armorProperty,
-            @NotNull AttributeProperty attributeProperty
+            @NotNull AttributePropertyAPI attributeProperty
     ) {
-        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, attributeProperty));
+        registry.put(registryId, new ArtisanItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, (AttributeProperty) attributeProperty));
     }
 
     public Set<String> getAllIds() {

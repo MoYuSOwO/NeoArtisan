@@ -1,9 +1,9 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.api.recipe.ArtisanShapedRecipeAPI;
-import io.github.moyusowo.neoartisan.api.recipe.ArtisanShapelessRecipeAPI;
-import io.github.moyusowo.neoartisan.api.recipe.RecipeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipeAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipeAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.RecipeRegistryAPI;
 import io.github.moyusowo.neoartisan.item.ItemRegistry;
 import io.github.moyusowo.neoartisan.util.Util;
 import org.bukkit.Material;

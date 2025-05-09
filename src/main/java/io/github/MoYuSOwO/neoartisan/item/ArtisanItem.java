@@ -3,13 +3,9 @@ package io.github.moyusowo.neoartisan.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.api.item.ArtisanItemAPI;
+import io.github.moyusowo.neoartisanapi.api.item.*;
 import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
 import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
-import io.github.moyusowo.neoartisan.record.item.ArmorProperty;
-import io.github.moyusowo.neoartisan.record.item.AttributeProperty;
-import io.github.moyusowo.neoartisan.record.item.FoodProperty;
-import io.github.moyusowo.neoartisan.record.item.WeaponProperty;
 import io.github.moyusowo.neoartisan.util.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -158,7 +154,11 @@ public class ArtisanItem implements ArtisanItemAPI {
     }
 
     @Override
-    public @NotNull AttributeProperty getAttributeProperty() {
+    public @NotNull AttributePropertyAPI getAttributeProperty() {
+        return (AttributePropertyAPI) this.attributeProperty;
+    }
+
+    public @NotNull AttributeProperty getOriginalAttributeProperty() {
         return this.attributeProperty;
     }
 

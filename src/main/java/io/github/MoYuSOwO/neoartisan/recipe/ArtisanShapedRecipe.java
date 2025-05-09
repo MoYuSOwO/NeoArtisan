@@ -1,7 +1,7 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.api.recipe.ArtisanShapedRecipeAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipeAPI;
 import io.github.moyusowo.neoartisan.item.ItemRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;

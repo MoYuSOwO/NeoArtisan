@@ -2,8 +2,6 @@ plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id 'io.papermc.paperweight.userdev' version '2.0.0-beta.16'
-    id 'maven-publish'
-    id 'signing'
 }
 
 group = 'io.github.moyusowo'
@@ -19,9 +17,11 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
+    implementation 'com.github.MoYuSOwO:NeoArtisanAPI:v1.1:api'
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 }
 
@@ -29,49 +29,6 @@ paperweight {
     reobfJar.enabled = true
 }
 
-javadoc {
-    failOnError = false
-}
-
-tasks.register('apiJar', Jar) {
-    archiveClassifier = 'api'
-
-    from(sourceSets.main.output) {
-        include 'io/github/moyusowo/neoartisan/api/**'
-        include 'io/github/moyusowo/neoartisan/record/**'
-    }
-
-    from(javadoc.outputs.files) {
-//        include 'io/github/moyusowo/neoartisan/api/**'
-//        include 'io/github/moyusowo/neoartisan/record/**'
-        into 'META-INF/javadoc'
-    }
-
-    dependsOn javadoc
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact apiJar // 只发布API包
-            artifactId = 'neoartisan-api'
-        }
-    }
-
-    repositories {
-        // 本地测试仓库（生成到项目根目录/repo）
-        maven { url = layout.buildDirectory.dir("../repo") }
-
-        // 如需发布到GitHub（取消注释）
-        maven {
-            url = uri("https://maven.pkg.github.com/MoYuSOwO/NeoArtisan")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-        }
-    }
-}
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"

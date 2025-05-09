@@ -1,9 +1,11 @@
 package io.github.moyusowo.neoartisan;
 
-import io.github.moyusowo.neoartisan.api.attribute.AttributeRegistryAPI;
-import io.github.moyusowo.neoartisan.api.attribute.AttributeTypeRegistryAPI;
-import io.github.moyusowo.neoartisan.api.item.ItemRegistryAPI;
-import io.github.moyusowo.neoartisan.api.recipe.RecipeRegistryAPI;
+import io.github.moyusowo.neoartisan.item.AttributeProperty;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.item.AttributePropertyAPI;
+import io.github.moyusowo.neoartisanapi.api.item.ItemRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.RecipeRegistryAPI;
 import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
 import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
 import io.github.moyusowo.neoartisan.item.ItemCommandRegistrar;
@@ -95,6 +97,12 @@ public final class NeoArtisan extends JavaPlugin {
         Bukkit.getServicesManager().register(
                 RecipeRegistryAPI.class,
                 RecipeRegistry.getInstance(),
+                this,
+                ServicePriority.Normal
+        );
+        Bukkit.getServicesManager().register(
+                AttributePropertyAPI.class,
+                new AttributeProperty(),
                 this,
                 ServicePriority.Normal
         );

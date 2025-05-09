@@ -1,14 +1,15 @@
-package io.github.moyusowo.neoartisan.record.item;
+package io.github.moyusowo.neoartisan.item;
 
 import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
 import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisanapi.api.item.AttributePropertyAPI;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class AttributeProperty {
+public class AttributeProperty implements AttributePropertyAPI {
 
     private final Map<NamespacedKey, Object> globalAttributeValues, itemstackAttributeValues;
 
@@ -17,6 +18,7 @@ public class AttributeProperty {
         this.itemstackAttributeValues = new HashMap<>();
     }
 
+    @Override
     public void addGlobalAttribute(NamespacedKey attributeKey, Object value) {
         if (!AttributeRegistry.getInstance().hasGlobalAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
         String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
@@ -25,6 +27,7 @@ public class AttributeProperty {
         this.globalAttributeValues.put(attributeKey, value);
     }
 
+    @Override
     public void addItemstackAttribute(NamespacedKey attributeKey, Object value) {
         if (attributeKey == null) throw new IllegalArgumentException("You can't provide a null key!");
         if (!AttributeRegistry.getInstance().hasItemstackAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
@@ -34,14 +37,17 @@ public class AttributeProperty {
         this.itemstackAttributeValues.put(attributeKey, value);
     }
 
+    @Override
     public boolean hasGlobalAttribute(NamespacedKey attributeKey) {
         return this.globalAttributeValues.containsKey(attributeKey);
     }
 
+    @Override
     public boolean hasItemstackAttribute(NamespacedKey attributeKey) {
         return this.itemstackAttributeValues.containsKey(attributeKey);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public @NotNull <T> T getGlobalAttributeValue(NamespacedKey attributeKey) {
         String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
@@ -49,6 +55,7 @@ public class AttributeProperty {
         return type.cast(this.globalAttributeValues.get(attributeKey));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public @NotNull <T> T getItemstackAttributeValue(NamespacedKey attributeKey) {
         String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
@@ -56,10 +63,12 @@ public class AttributeProperty {
         return type.cast(this.itemstackAttributeValues.get(attributeKey));
     }
 
+    @Override
     public boolean isEmpty() {
         return this.globalAttributeValues.isEmpty() && this.itemstackAttributeValues.isEmpty();
     }
 
+    @Override
     public NamespacedKey[] getItemstackAttributeKeys() {
         return this.itemstackAttributeValues.keySet().toArray(new NamespacedKey[0]);
     }
