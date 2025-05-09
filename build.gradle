@@ -37,6 +37,8 @@ tasks.register('apiJavadoc', Javadoc) {
 
     classpath = sourceSets.main.compileClasspath
 
+    destinationDir = layout.buildDirectory.dir('javadoc').get().asFile
+
     options.encoding = 'UTF-8'
     options.addStringOption('Xdoclint:none', '-quiet')
 
@@ -55,7 +57,7 @@ tasks.register('apiJar', Jar) {
     }
 
     doLast {
-        def docsDir = tasks.named('apiJavadoc').get().destinationDir
+        def docsDir = apiJavadoc.destinationDir
         if (docsDir.exists()) {
             logger.lifecycle("Javadoc included: ${docsDir}")
         } else {
