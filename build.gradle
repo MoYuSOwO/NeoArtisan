@@ -30,7 +30,7 @@ paperweight {
 }
 
 javadoc {
-    include 'io/github/moyusowo/neoartisan/api/**', 'io/github/moyusowo/neoartisan/record/**'
+    include 'io/github/moyusowo/**'
 }
 
 tasks.register('apiJar', Jar) {
