@@ -35,13 +35,13 @@ public final class RecipeRegistry implements Listener, RecipeRegistryAPI {
     }
 
     private RecipeRegistry() {
+        instance = this;
         shapedRegistry = new ConcurrentHashMap<>();
         shapelessRegistry = new ConcurrentHashMap<>();
         registerListener();
         registerFromFile();
         NeoArtisan.logger().info("成功从文件注册 " + shapedRegistry.size() + " 个自定义有序配方");
         NeoArtisan.logger().info("成功从文件注册 " + shapelessRegistry.size() + " 个自定义无序配方");
-        instance = this;
     }
 
     private final ConcurrentHashMap<String, ArtisanShapedRecipe> shapedRegistry;
@@ -66,7 +66,7 @@ public final class RecipeRegistry implements Listener, RecipeRegistryAPI {
     }
 
     public void registerListener() {
-        NeoArtisan.registerListener(new RecipeRegistry());
+        NeoArtisan.registerListener(instance);
     }
 
     public void registerFromFile() {

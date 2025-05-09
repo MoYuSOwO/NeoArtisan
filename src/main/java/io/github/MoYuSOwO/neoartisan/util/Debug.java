@@ -16,7 +16,6 @@ public class Debug implements Listener {
 
     public static void init() {
         NeoArtisan.registerListener(new Debug());
-        AttributeTypeRegistry.getInstance().registerAttributeType("key", NamespacedKeyDataType.TYPE);
     }
 
     @EventHandler
