@@ -29,6 +29,10 @@ paperweight {
     reobfJar.enabled = true
 }
 
+javadoc {
+    include 'io/github/moyusowo/neoartisan/api/**', 'io/github/moyusowo/neoartisan/record/**'
+}
+
 tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'
     from sourceSets.main.output
