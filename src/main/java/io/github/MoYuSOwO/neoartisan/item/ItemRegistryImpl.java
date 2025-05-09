@@ -53,7 +53,7 @@ public final class ItemRegistryImpl implements ItemRegistry {
     }
 
     private void readYml(YamlConfiguration item) {
-        Builder builder = (Builder) builder();
+        BuilderImpl builder = (BuilderImpl) builder();
         builder.registryId(ReadUtil.getRegistryId(item));
         builder.rawMaterial(ReadUtil.getRawMaterial(item));
         builder.hasOriginalCraft(ReadUtil.getOriginalCraft(item));
@@ -69,39 +69,22 @@ public final class ItemRegistryImpl implements ItemRegistry {
         if (maxDurability != null) builder.maxDurability(maxDurability);
         builder.armorProperty(ReadUtil.getArmor(item));
         builder.attributeProperty(ReadUtil.getAttribute(item));
-    }
-
-    @Deprecated
-    @Override
-    public void registerItem(
-            @NotNull NamespacedKey registryId,
-            @NotNull Material rawMaterial,
-            boolean hasOriginalCraft,
-            @Nullable Integer customModelData,
-            @NotNull String displayName,
-            @NotNull List<String> lore,
-            @NotNull FoodProperty foodProperty,
-            @NotNull WeaponProperty weaponProperty,
-            @Nullable Integer maxDurability,
-            @NotNull ArmorProperty armorProperty,
-            @NotNull AttributeProperty attributeProperty
-    ) {
-        registry.put(registryId, new ArtisanItemImpl(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, (AttributePropertyImpl) attributeProperty));
+        builder.cropId(ReadUtil.getCropKey(item));
     }
 
     @NotNull
     @Override
-    public ItemRegistry.Builder builder() {
-        return new Builder();
+    public Builder builder() {
+        return new BuilderImpl();
     }
 
     @Override
-    public void registerItem(@NotNull ItemRegistry.Builder builder) {
-        Builder builderImpl = (Builder) builder;
+    public void registerItem(@NotNull Builder builder) {
+        BuilderImpl builderImpl = (BuilderImpl) builder;
         registry.put(builderImpl.registryId, builderImpl.build());
     }
 
-    private static class Builder implements ItemRegistry.Builder {
+    private static class BuilderImpl implements Builder {
         private NamespacedKey registryId;
         private Material rawMaterial;
         private boolean hasOriginalCraft;
@@ -113,8 +96,9 @@ public final class ItemRegistryImpl implements ItemRegistry {
         private Integer maxDurability;
         private ArmorProperty armorProperty;
         private AttributePropertyImpl attributeProperty;
+        private NamespacedKey cropId;
 
-        private Builder() {
+        private BuilderImpl() {
             this.registryId = null;
             this.rawMaterial = null;
             this.hasOriginalCraft = false;
@@ -126,96 +110,104 @@ public final class ItemRegistryImpl implements ItemRegistry {
             this.maxDurability = null;
             this.armorProperty = ArmorProperty.EMPTY;
             this.attributeProperty = new AttributePropertyImpl();
+            this.cropId = null;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder registryId(@NotNull NamespacedKey registryId) {
+        public Builder registryId(@NotNull NamespacedKey registryId) {
             this.registryId = Objects.requireNonNull(registryId);
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder rawMaterial(@NotNull Material rawMaterial) {
+        public Builder rawMaterial(@NotNull Material rawMaterial) {
             this.rawMaterial = Objects.requireNonNull(rawMaterial);
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder hasOriginalCraft(boolean hasOriginalCraft) {
+        public Builder hasOriginalCraft(boolean hasOriginalCraft) {
             this.hasOriginalCraft = hasOriginalCraft;
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder customModelData(int customModelData) {
+        public Builder customModelData(int customModelData) {
             this.customModelData = customModelData;
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder displayName(@NotNull String displayName) {
+        public Builder displayName(@NotNull String displayName) {
             this.displayName = toNameComponent(Objects.requireNonNull(displayName));
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder displayName(@NotNull Component component) {
+        public Builder displayName(@NotNull Component component) {
             this.displayName = Objects.requireNonNull(component);
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder lore(@NotNull List<String> lore) {
+        public Builder lore(@NotNull List<String> lore) {
             this.lore = toLoreComponentList(Objects.requireNonNull(lore));
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder loreComponent(@NotNull List<Component> lore) {
+        public Builder loreComponent(@NotNull List<Component> lore) {
             this.lore = Objects.requireNonNull(lore);
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder foodProperty(@NotNull FoodProperty foodProperty) {
+        public Builder foodProperty(@NotNull FoodProperty foodProperty) {
             this.foodProperty = Objects.requireNonNull(foodProperty);
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder weaponProperty(@NotNull WeaponProperty weaponProperty) {
+        public Builder weaponProperty(@NotNull WeaponProperty weaponProperty) {
             this.weaponProperty = Objects.requireNonNull(weaponProperty);
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder maxDurability(int maxDurability) {
+        public Builder maxDurability(int maxDurability) {
             this.maxDurability = maxDurability;
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder armorProperty(ArmorProperty armorProperty) {
+        public Builder armorProperty(ArmorProperty armorProperty) {
             this.armorProperty = Objects.requireNonNull(armorProperty);
             return this;
         }
 
         @NotNull
         @Override
-        public ItemRegistry.Builder attributeProperty(AttributeProperty attributeProperty) {
+        public Builder attributeProperty(AttributeProperty attributeProperty) {
             this.attributeProperty = Objects.requireNonNull((AttributePropertyImpl) attributeProperty);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public Builder cropId(NamespacedKey cropId) {
+            this.cropId = cropId;
             return this;
         }
 
@@ -234,7 +226,8 @@ public final class ItemRegistryImpl implements ItemRegistry {
                     weaponProperty,
                     maxDurability,
                     armorProperty,
-                    attributeProperty
+                    attributeProperty,
+                    cropId
             );
         }
 

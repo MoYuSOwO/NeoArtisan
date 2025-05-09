@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ArtisanItemImpl implements ArtisanItem {
+class ArtisanItemImpl implements ArtisanItem {
     private final NamespacedKey registryId;
     private final Material rawMaterial;
     private final boolean hasOriginalCraft;
@@ -39,6 +39,7 @@ public class ArtisanItemImpl implements ArtisanItem {
     private final Integer maxDurability;
     private final ArmorProperty armorProperty;
     private final AttributePropertyImpl attributeProperty;
+    private final NamespacedKey cropId;
     private final ItemMeta itemMeta;
 
     protected ArtisanItemImpl(
@@ -52,7 +53,8 @@ public class ArtisanItemImpl implements ArtisanItem {
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
             @NotNull ArmorProperty armorProperty,
-            @NotNull AttributePropertyImpl attributeProperty
+            @NotNull AttributePropertyImpl attributeProperty,
+            @Nullable NamespacedKey cropId
     ) {
         this.registryId = registryId;
         this.rawMaterial = rawMaterial;
@@ -65,35 +67,8 @@ public class ArtisanItemImpl implements ArtisanItem {
         this.maxDurability = maxDurability;
         this.armorProperty = armorProperty;
         this.attributeProperty = attributeProperty;
+        this.cropId = cropId;
         this.itemMeta = createNewItemMeta();
-    }
-
-    protected ArtisanItemImpl(
-            NamespacedKey registryId,
-            Material rawMaterial,
-            boolean hasOriginalCraft,
-            @Nullable Integer customModelData,
-            String displayName,
-            List<String> lore,
-            @NotNull FoodProperty foodProperty,
-            @NotNull WeaponProperty weaponProperty,
-            @Nullable Integer maxDurability,
-            @NotNull ArmorProperty armorProperty,
-            @NotNull AttributePropertyImpl attributeProperty
-    ) {
-        this(
-                registryId,
-                rawMaterial,
-                hasOriginalCraft,
-                customModelData,
-                toNameComponent(displayName),
-                toLoreComponentList(lore),
-                foodProperty,
-                weaponProperty,
-                maxDurability,
-                armorProperty,
-                attributeProperty
-        );
     }
 
     protected ItemStack getItemStack(int count) {
@@ -166,6 +141,12 @@ public class ArtisanItemImpl implements ArtisanItem {
     public @NotNull ArmorProperty getArmorProperty() {
         return this.armorProperty;
     }
+
+    @Override
+    public @Nullable NamespacedKey getCropId() {
+        return cropId;
+    }
+
 
     @SuppressWarnings("UnstableApiUsage")
     private ItemMeta createNewItemMeta() {

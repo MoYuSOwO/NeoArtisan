@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.List;
 
+import static io.github.moyusowo.neoartisan.util.Util.saveDefaultIfNotExists;
+
 public final class ReadUtil {
 
     private ReadUtil() {}
@@ -32,15 +34,6 @@ public final class ReadUtil {
             saveDefaultIfNotExists("item/magic_helmet.yml");
         }
         return itemFolder.listFiles();
-    }
-
-    private static void saveDefaultIfNotExists(String resourcePath) {
-        String targetPath = resourcePath.replace('/', File.separatorChar);
-        File targetFile = new File(NeoArtisan.instance().getDataFolder(), targetPath);
-        if (targetFile.exists()) {
-            return;
-        }
-        NeoArtisan.instance().saveResource(resourcePath, false);
     }
 
     public static boolean isYmlFile(@NotNull File file) {
@@ -168,6 +161,12 @@ public final class ReadUtil {
             }
         }
         return attributeProperty;
+    }
+
+    public static NamespacedKey getCropKey(YamlConfiguration item) {
+        String registryId = item.getString("cropId");
+        if (registryId != null) return new NamespacedKey(NeoArtisan.instance(), registryId);
+        else return null;
     }
 
     public static boolean getOriginalCraft(YamlConfiguration item) {
