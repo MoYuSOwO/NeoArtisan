@@ -29,22 +29,41 @@ paperweight {
     reobfJar.enabled = true
 }
 
-javadoc {
+tasks.register('apiJavadoc', Javadoc) {
+
     source = fileTree('src/main/java') {
         include 'io/github/moyusowo/neoartisan/**'
     }
+
+    classpath = sourceSets.main.compileClasspath
+
     options.encoding = 'UTF-8'
     options.addStringOption('Xdoclint:none', '-quiet')
+
+    dependsOn compileJava
 }
 
 tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'
     from sourceSets.main.output
-    from javadoc.destinationDir
     include 'io/github/moyusowo/neoartisan/api/**'
     include 'io/github/moyusowo/neoartisan/record/**'
 
-    dependsOn javadoc
+
+    from(apiJavadoc.destinationDir) {
+        into 'META-INF/javadoc'
+    }
+
+    project.afterEvaluate {
+        def docsDir = tasks.named('apiJavadoc').get().destinationDir
+        if (docsDir.exists()) {
+            logger.lifecycle("Javadoc included：${docsDir}")
+        } else {
+            throw new GradleException("Javadoc not included")
+        }
+    }
+
+    dependsOn apiJavadoc
 }
 
 publishing {
