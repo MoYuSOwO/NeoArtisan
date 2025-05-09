@@ -30,6 +30,7 @@ paperweight {
 }
 
 javadoc {
+    source = sourceSets.main.allJava
     include 'io/github/moyusowo/**'
 }
 
