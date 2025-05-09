@@ -5,6 +5,8 @@ import io.github.moyusowo.neoartisanapi.api.item.*;
 import io.github.moyusowo.neoartisan.attribute.AttributeRegistryImpl;
 import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistryImpl;
 import io.github.moyusowo.neoartisan.util.NamespacedKeyDataType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,13 +17,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ItemRegistryImpl implements ItemRegistryAPI {
+public final class ItemRegistryImpl implements ItemRegistry {
 
     private static ItemRegistryImpl instance;
 
@@ -54,20 +53,25 @@ public final class ItemRegistryImpl implements ItemRegistryAPI {
     }
 
     private void readYml(YamlConfiguration item) {
-        NamespacedKey registryId = ReadUtil.getRegistryId(item);
-        Material rawMaterial = ReadUtil.getRawMaterial(item);
-        boolean hasOriginalCraft = ReadUtil.getOriginalCraft(item);
+        Builder builder = (Builder) builder();
+        builder.registryId(ReadUtil.getRegistryId(item));
+        builder.rawMaterial(ReadUtil.getRawMaterial(item));
+        builder.hasOriginalCraft(ReadUtil.getOriginalCraft(item));
         Integer customModelData = ReadUtil.getCustomModelData(item);
+        if (customModelData != null) builder.customModelData(customModelData);
         String displayName = ReadUtil.getDisplayName(item);
+        if (displayName != null) builder.displayName(displayName);
         List<String> lore = ReadUtil.getLore(item);
-        FoodProperty foodProperty = ReadUtil.getFood(item);
-        WeaponProperty weaponProperty = ReadUtil.getWeapon(item);
+        builder.lore(lore);
+        builder.foodProperty(ReadUtil.getFood(item));
+        builder.weaponProperty(ReadUtil.getWeapon(item));
         Integer maxDurability = ReadUtil.getMaxDurability(item);
-        ArmorProperty armorProperty = ReadUtil.getArmor(item);
-        AttributePropertyImpl attributeProperty = ReadUtil.getAttribute(item);
-        registerItem(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, attributeProperty);
+        if (maxDurability != null) builder.maxDurability(maxDurability);
+        builder.armorProperty(ReadUtil.getArmor(item));
+        builder.attributeProperty(ReadUtil.getAttribute(item));
     }
 
+    @Deprecated
     @Override
     public void registerItem(
             @NotNull NamespacedKey registryId,
@@ -80,9 +84,176 @@ public final class ItemRegistryImpl implements ItemRegistryAPI {
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
             @NotNull ArmorProperty armorProperty,
-            @NotNull AttributePropertyAPI attributeProperty
+            @NotNull AttributeProperty attributeProperty
     ) {
         registry.put(registryId, new ArtisanItemImpl(registryId, rawMaterial, hasOriginalCraft, customModelData, displayName, lore, foodProperty, weaponProperty, maxDurability, armorProperty, (AttributePropertyImpl) attributeProperty));
+    }
+
+    @NotNull
+    @Override
+    public ItemRegistry.Builder builder() {
+        return new Builder();
+    }
+
+    @Override
+    public void registerItem(@NotNull ItemRegistry.Builder builder) {
+        Builder builderImpl = (Builder) builder;
+        registry.put(builderImpl.registryId, builderImpl.build());
+    }
+
+    private static class Builder implements ItemRegistry.Builder {
+        private NamespacedKey registryId;
+        private Material rawMaterial;
+        private boolean hasOriginalCraft;
+        private Integer customModelData;
+        private Component displayName;
+        private List<Component> lore;
+        private FoodProperty foodProperty;
+        private WeaponProperty weaponProperty;
+        private Integer maxDurability;
+        private ArmorProperty armorProperty;
+        private AttributePropertyImpl attributeProperty;
+
+        private Builder() {
+            this.registryId = null;
+            this.rawMaterial = null;
+            this.hasOriginalCraft = false;
+            this.customModelData = null;
+            this.displayName = null;
+            this.lore = new ArrayList<>();
+            this.foodProperty = FoodProperty.EMPTY;
+            this.weaponProperty = WeaponProperty.EMPTY;
+            this.maxDurability = null;
+            this.armorProperty = ArmorProperty.EMPTY;
+            this.attributeProperty = new AttributePropertyImpl();
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder registryId(@NotNull NamespacedKey registryId) {
+            this.registryId = Objects.requireNonNull(registryId);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder rawMaterial(@NotNull Material rawMaterial) {
+            this.rawMaterial = Objects.requireNonNull(rawMaterial);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder hasOriginalCraft(boolean hasOriginalCraft) {
+            this.hasOriginalCraft = hasOriginalCraft;
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder customModelData(int customModelData) {
+            this.customModelData = customModelData;
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder displayName(@NotNull String displayName) {
+            this.displayName = toNameComponent(Objects.requireNonNull(displayName));
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder displayName(@NotNull Component component) {
+            this.displayName = Objects.requireNonNull(component);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder lore(@NotNull List<String> lore) {
+            this.lore = toLoreComponentList(Objects.requireNonNull(lore));
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder loreComponent(@NotNull List<Component> lore) {
+            this.lore = Objects.requireNonNull(lore);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder foodProperty(@NotNull FoodProperty foodProperty) {
+            this.foodProperty = Objects.requireNonNull(foodProperty);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder weaponProperty(@NotNull WeaponProperty weaponProperty) {
+            this.weaponProperty = Objects.requireNonNull(weaponProperty);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder maxDurability(int maxDurability) {
+            this.maxDurability = maxDurability;
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder armorProperty(ArmorProperty armorProperty) {
+            this.armorProperty = Objects.requireNonNull(armorProperty);
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public ItemRegistry.Builder attributeProperty(AttributeProperty attributeProperty) {
+            this.attributeProperty = Objects.requireNonNull((AttributePropertyImpl) attributeProperty);
+            return this;
+        }
+
+        @NotNull private ArtisanItemImpl build() {
+            if (registryId == null || rawMaterial == null) {
+                throw new IllegalArgumentException("At least you should provide registryId and rawMaterial!");
+            }
+            return new ArtisanItemImpl(
+                    registryId,
+                    rawMaterial,
+                    hasOriginalCraft,
+                    customModelData,
+                    displayName,
+                    lore,
+                    foodProperty,
+                    weaponProperty,
+                    maxDurability,
+                    armorProperty,
+                    attributeProperty
+            );
+        }
+
+        private static Component toNameComponent(String s) {
+            s = "<white><italic:false>" + s;
+            return MiniMessage.miniMessage().deserialize(s);
+        }
+
+        private static List<Component> toLoreComponentList(List<String> list) {
+            List<Component> newList = new ArrayList<>();
+            for (String s : list) {
+                newList.add(
+                        MiniMessage.miniMessage().deserialize(
+                                "<gray><italic:false>" + s
+                        )
+                );
+            }
+            return newList;
+        }
     }
 
     public Set<String> getAllIds() {
@@ -136,14 +307,14 @@ public final class ItemRegistryImpl implements ItemRegistryAPI {
     }
 
     @Override
-    public @NotNull ArtisanItemAPI getArtisanItemAPI(@NotNull NamespacedKey registryId) {
+    public @NotNull ArtisanItem getArtisanItemAPI(@NotNull NamespacedKey registryId) {
         ArtisanItemImpl artisanItem = registry.get(registryId);
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }
 
     @Override
-    public @NotNull ArtisanItemAPI getArtisanItemAPI(ItemStack itemStack) {
+    public @NotNull ArtisanItem getArtisanItemAPI(ItemStack itemStack) {
         ArtisanItemImpl artisanItem = registry.get(getRegistryId(itemStack));
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;

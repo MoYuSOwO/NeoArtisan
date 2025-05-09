@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ArtisanItemImpl implements ArtisanItemAPI {
+public class ArtisanItemImpl implements ArtisanItem {
     private final NamespacedKey registryId;
     private final Material rawMaterial;
     private final boolean hasOriginalCraft;
@@ -154,8 +154,8 @@ public class ArtisanItemImpl implements ArtisanItemAPI {
     }
 
     @Override
-    public @NotNull AttributePropertyAPI getAttributeProperty() {
-        return (AttributePropertyAPI) this.attributeProperty;
+    public @NotNull AttributeProperty getAttributeProperty() {
+        return (AttributeProperty) this.attributeProperty;
     }
 
     public @NotNull AttributePropertyImpl getOriginalAttributeProperty() {

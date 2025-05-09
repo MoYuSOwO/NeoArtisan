@@ -1,7 +1,7 @@
 package io.github.moyusowo.neoartisan.attribute;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class AttributeRegistryImpl implements AttributeRegistryAPI {
+public final class AttributeRegistryImpl implements AttributeRegistry {
 
     public static void init() {
         new AttributeRegistryImpl();

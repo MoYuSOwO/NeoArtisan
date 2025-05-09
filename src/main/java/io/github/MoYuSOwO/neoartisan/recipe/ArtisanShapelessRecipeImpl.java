@@ -1,14 +1,14 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipeAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipe;
 import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class ArtisanShapelessRecipeImpl implements ArtisanShapelessRecipeAPI {
+public class ArtisanShapelessRecipeImpl implements ArtisanShapelessRecipe {
     private final NamespacedKey[] recipe;
     private NamespacedKey result;
     private int count;

@@ -2,20 +2,25 @@ package io.github.moyusowo.neoartisan.item;
 
 import io.github.moyusowo.neoartisan.attribute.AttributeRegistryImpl;
 import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistryImpl;
-import io.github.moyusowo.neoartisanapi.api.item.AttributePropertyAPI;
+import io.github.moyusowo.neoartisanapi.api.item.AttributeProperty;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class AttributePropertyImpl implements AttributePropertyAPI {
+public class AttributePropertyImpl implements AttributeProperty {
 
     private final Map<NamespacedKey, Object> globalAttributeValues, itemstackAttributeValues;
 
     public AttributePropertyImpl() {
         this.globalAttributeValues = new HashMap<>();
         this.itemstackAttributeValues = new HashMap<>();
+    }
+
+    @Override
+    public AttributeProperty empty() {
+        return new AttributePropertyImpl();
     }
 
     @Override

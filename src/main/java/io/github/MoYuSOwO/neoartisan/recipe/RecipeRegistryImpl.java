@@ -1,9 +1,9 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipeAPI;
-import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipeAPI;
-import io.github.moyusowo.neoartisanapi.api.recipe.RecipeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipe;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipe;
+import io.github.moyusowo.neoartisanapi.api.recipe.RecipeRegistry;
 import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
 import io.github.moyusowo.neoartisan.util.Util;
 import org.bukkit.Material;
@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class RecipeRegistryImpl implements Listener, RecipeRegistryAPI {
+public final class RecipeRegistryImpl implements Listener, RecipeRegistry {
 
     private static RecipeRegistryImpl instance;
 
@@ -49,19 +49,19 @@ public final class RecipeRegistryImpl implements Listener, RecipeRegistryAPI {
 
     @Override
     @NotNull
-    public ArtisanShapedRecipeAPI createShapedRecipe(@NotNull String line1, @NotNull String line2, @NotNull String line3) {
+    public ArtisanShapedRecipe createShapedRecipe(@NotNull String line1, @NotNull String line2, @NotNull String line3) {
         return new ArtisanShapedRecipeImpl(line1, line2, line3);
     }
 
     @Override
     @NotNull
-    public ArtisanShapelessRecipeAPI createShapelessRecipe() {
+    public ArtisanShapelessRecipe createShapelessRecipe() {
         return new ArtisanShapelessRecipeImpl();
     }
 
     @Override
     @NotNull
-    public ArtisanShapelessRecipeAPI createShapelessRecipe(NamespacedKey result, int count) {
+    public ArtisanShapelessRecipe createShapelessRecipe(NamespacedKey result, int count) {
         return new ArtisanShapelessRecipeImpl(result, count);
     }
 

@@ -1,6 +1,6 @@
 package io.github.moyusowo.neoartisan.attribute;
 
-import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistryAPI;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistry;
 import io.github.moyusowo.neoartisan.util.Todos;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class AttributeTypeRegistryImpl implements AttributeTypeRegistryAPI {
+public final class AttributeTypeRegistryImpl implements AttributeTypeRegistry {
 
     private static AttributeTypeRegistryImpl instance;
 

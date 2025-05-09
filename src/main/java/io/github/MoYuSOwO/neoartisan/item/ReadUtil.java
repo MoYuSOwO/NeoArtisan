@@ -76,9 +76,7 @@ public final class ReadUtil {
     }
 
     public static String getDisplayName(YamlConfiguration item) {
-        String itemName = item.getString("displayName");
-        if (itemName == null) throw new IllegalArgumentException("You must provide a name!");
-        else return itemName;
+        return item.getString("displayName");
     }
 
     public static @NotNull List<String> getLore(YamlConfiguration item) {
