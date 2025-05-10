@@ -1,0 +1,18 @@
+cropId: magic_crop
+actualState: minecraft:wheat[age=1]
+stages:
+  1:
+    appearance: minecraft:tripwire[attached=false,disarmed=false,east=false,north=false,south=false,west=false,powered=false]
+    drops:
+      - neoartisan:broken_stick
+      - minecraft:wheat
+  2:
+    appearance: minecraft:tripwire[attached=true,disarmed=false,east=false,north=false,south=false,west=false,powered=false]
+    drops:
+      - neoartisan:broken_stick
+      - minecraft:apple
+  3:
+    appearance: minecraft:tripwire[attached=false,disarmed=true,east=false,north=false,south=false,west=false,powered=false]
+    drops:
+      - neoartisan:magic_diamond
+      - minecraft:iron_sword

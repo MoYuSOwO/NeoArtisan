@@ -3,9 +3,9 @@ package io.github.moyusowo.neoartisan.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistry;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistry;
 import io.github.moyusowo.neoartisanapi.api.item.*;
-import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
 import io.github.moyusowo.neoartisan.util.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ArtisanItem implements ArtisanItemAPI {
+class ArtisanItemImpl implements ArtisanItem {
     private final NamespacedKey registryId;
     private final Material rawMaterial;
     private final boolean hasOriginalCraft;
@@ -38,10 +38,11 @@ public class ArtisanItem implements ArtisanItemAPI {
     private final WeaponProperty weaponProperty;
     private final Integer maxDurability;
     private final ArmorProperty armorProperty;
-    private final AttributeProperty attributeProperty;
+    private final AttributePropertyImpl attributeProperty;
+    private final NamespacedKey cropId;
     private final ItemMeta itemMeta;
 
-    protected ArtisanItem(
+    protected ArtisanItemImpl(
             NamespacedKey registryId,
             Material rawMaterial,
             boolean hasOriginalCraft,
@@ -52,7 +53,8 @@ public class ArtisanItem implements ArtisanItemAPI {
             @NotNull WeaponProperty weaponProperty,
             @Nullable Integer maxDurability,
             @NotNull ArmorProperty armorProperty,
-            @NotNull AttributeProperty attributeProperty
+            @NotNull AttributePropertyImpl attributeProperty,
+            @Nullable NamespacedKey cropId
     ) {
         this.registryId = registryId;
         this.rawMaterial = rawMaterial;
@@ -65,35 +67,8 @@ public class ArtisanItem implements ArtisanItemAPI {
         this.maxDurability = maxDurability;
         this.armorProperty = armorProperty;
         this.attributeProperty = attributeProperty;
+        this.cropId = cropId;
         this.itemMeta = createNewItemMeta();
-    }
-
-    protected ArtisanItem(
-            NamespacedKey registryId,
-            Material rawMaterial,
-            boolean hasOriginalCraft,
-            @Nullable Integer customModelData,
-            String displayName,
-            List<String> lore,
-            @NotNull FoodProperty foodProperty,
-            @NotNull WeaponProperty weaponProperty,
-            @Nullable Integer maxDurability,
-            @NotNull ArmorProperty armorProperty,
-            @NotNull AttributeProperty attributeProperty
-    ) {
-        this(
-                registryId,
-                rawMaterial,
-                hasOriginalCraft,
-                customModelData,
-                toNameComponent(displayName),
-                toLoreComponentList(lore),
-                foodProperty,
-                weaponProperty,
-                maxDurability,
-                armorProperty,
-                attributeProperty
-        );
     }
 
     protected ItemStack getItemStack(int count) {
@@ -154,11 +129,11 @@ public class ArtisanItem implements ArtisanItemAPI {
     }
 
     @Override
-    public @NotNull AttributePropertyAPI getAttributeProperty() {
-        return (AttributePropertyAPI) this.attributeProperty;
+    public @NotNull AttributeProperty getAttributeProperty() {
+        return (AttributeProperty) this.attributeProperty;
     }
 
-    public @NotNull AttributeProperty getOriginalAttributeProperty() {
+    public @NotNull AttributePropertyImpl getOriginalAttributeProperty() {
         return this.attributeProperty;
     }
 
@@ -166,6 +141,12 @@ public class ArtisanItem implements ArtisanItemAPI {
     public @NotNull ArmorProperty getArmorProperty() {
         return this.armorProperty;
     }
+
+    @Override
+    public @Nullable NamespacedKey getCropId() {
+        return cropId;
+    }
+
 
     @SuppressWarnings("UnstableApiUsage")
     private ItemMeta createNewItemMeta() {
@@ -221,26 +202,30 @@ public class ArtisanItem implements ArtisanItemAPI {
             EquippableComponent equippableComponent = itemMeta.getEquippable();
             equippableComponent.setSlot(this.armorProperty.slot());
             itemMeta.setEquippable(equippableComponent);
-            modifiers.removeAll(Attribute.ARMOR);
-            modifiers.removeAll(Attribute.ARMOR_TOUGHNESS);
-            modifiers.put(
-                    Attribute.ARMOR,
-                    new AttributeModifier(
-                            this.registryId,
-                            this.armorProperty.armor(),
-                            AttributeModifier.Operation.ADD_NUMBER,
-                            this.armorProperty.slot().getGroup()
-                    )
-            );
-            modifiers.put(
-                    Attribute.ARMOR_TOUGHNESS,
-                    new AttributeModifier(
-                            this.registryId,
-                            this.armorProperty.armorToughness(),
-                            AttributeModifier.Operation.ADD_NUMBER,
-                            this.armorProperty.slot().getGroup()
-                    )
-            );
+            if (this.armorProperty.armor() != null) {
+                modifiers.removeAll(Attribute.ARMOR);
+                modifiers.put(
+                        Attribute.ARMOR,
+                        new AttributeModifier(
+                                this.registryId,
+                                this.armorProperty.armor(),
+                                AttributeModifier.Operation.ADD_NUMBER,
+                                this.armorProperty.slot().getGroup()
+                        )
+                );
+            }
+            if (this.armorProperty.armorToughness() != null) {
+                modifiers.removeAll(Attribute.ARMOR_TOUGHNESS);
+                modifiers.put(
+                        Attribute.ARMOR_TOUGHNESS,
+                        new AttributeModifier(
+                                this.registryId,
+                                this.armorProperty.armorToughness(),
+                                AttributeModifier.Operation.ADD_NUMBER,
+                                this.armorProperty.slot().getGroup()
+                        )
+                );
+            }
         }
         if (this.maxDurability != null && (itemMeta instanceof Damageable)) {
             ((Damageable) itemMeta).setMaxDamage(this.maxDurability);
@@ -248,8 +233,8 @@ public class ArtisanItem implements ArtisanItemAPI {
         if (!this.attributeProperty.isEmpty()) {
             NamespacedKey[] keys = this.attributeProperty.getItemstackAttributeKeys();
             for (NamespacedKey key : keys) {
-                String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(key);
-                PersistentDataType<?, ?> PDCType = AttributeTypeRegistry.getInstance().getAttributePDCType(typeName);
+                String typeName = AttributeRegistry.getAttributeRegistryManager().getItemstackAttributeTypeName(key);
+                PersistentDataType<?, ?> PDCType = AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributePDCType(typeName);
                 itemMeta.getPersistentDataContainer().set(key, PDCType, this.attributeProperty.getItemstackAttributeValue(key));
             }
         }

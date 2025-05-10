@@ -1,8 +1,8 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipeAPI;
-import io.github.moyusowo.neoartisan.item.ItemRegistry;
+import io.github.moyusowo.neoartisanapi.api.item.ItemRegistry;
+import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipe;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArtisanShapedRecipe implements ArtisanShapedRecipeAPI {
+class ArtisanShapedRecipeImpl implements ArtisanShapedRecipe {
     private final Map<Character, NamespacedKey> toRegistryId;
     private final char[] recipe;
     private NamespacedKey result;
@@ -21,14 +21,14 @@ public class ArtisanShapedRecipe implements ArtisanShapedRecipeAPI {
         StringBuilder builtRecipe = new StringBuilder();
         for (int i = 0; i < 9; i++) {
             if (matrix[i] != null) {
-                builtRecipe.append(ItemRegistry.getInstance().getRegistryId(matrix[i]));
+                builtRecipe.append(ItemRegistry.getItemRegistryManager().getRegistryId(matrix[i]));
             }
             builtRecipe.append(",");
         }
         return builtRecipe.toString();
     }
 
-    public ArtisanShapedRecipe(@NotNull String line1, @NotNull String line2, @NotNull String line3) {
+    public ArtisanShapedRecipeImpl(@NotNull String line1, @NotNull String line2, @NotNull String line3) {
         if (line1.isEmpty()) line1 = "   ";
         if (line2.isEmpty()) line2 = "   ";
         if (line3.isEmpty()) line3 = "   ";
@@ -77,7 +77,7 @@ public class ArtisanShapedRecipe implements ArtisanShapedRecipeAPI {
             if (recipe[i] != ' ') builtRecipe.append(toRegistryId.get(recipe[i]).asString());
             builtRecipe.append(",");
         }
-        RecipeRegistry.getInstance().register(builtRecipe.toString(), this);
+        RecipeRegistryImpl.getInstance().register(builtRecipe.toString(), this);
         this.built = true;
     }
 

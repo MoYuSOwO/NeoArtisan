@@ -1,8 +1,8 @@
 package io.github.moyusowo.neoartisan.item;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.attribute.AttributeRegistry;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistry;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistry;
 import io.github.moyusowo.neoartisanapi.api.item.ArmorProperty;
 import io.github.moyusowo.neoartisanapi.api.item.FoodProperty;
 import io.github.moyusowo.neoartisanapi.api.item.WeaponProperty;
@@ -16,7 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.List;
 
-public final class ReadUtil {
+import static io.github.moyusowo.neoartisan.util.Util.saveDefaultIfNotExists;
+
+final class ReadUtil {
 
     private ReadUtil() {}
 
@@ -32,21 +34,6 @@ public final class ReadUtil {
             saveDefaultIfNotExists("item/magic_helmet.yml");
         }
         return itemFolder.listFiles();
-    }
-
-    private static void saveDefaultIfNotExists(String resourcePath) {
-        String targetPath = resourcePath.replace('/', File.separatorChar);
-        File targetFile = new File(NeoArtisan.instance().getDataFolder(), targetPath);
-        if (targetFile.exists()) {
-            return;
-        }
-        NeoArtisan.instance().saveResource(resourcePath, false);
-    }
-
-    public static boolean isYmlFile(@NotNull File file) {
-        if (!file.isFile()) return false;
-        String name = file.getName().toLowerCase();
-        return name.endsWith(".yml") || name.endsWith(".yaml");
     }
 
     public static NamespacedKey getRegistryId(YamlConfiguration item) {
@@ -76,9 +63,7 @@ public final class ReadUtil {
     }
 
     public static String getDisplayName(YamlConfiguration item) {
-        String itemName = item.getString("displayName");
-        if (itemName == null) throw new IllegalArgumentException("You must provide a name!");
-        else return itemName;
+        return item.getString("displayName");
     }
 
     public static @NotNull List<String> getLore(YamlConfiguration item) {
@@ -130,8 +115,8 @@ public final class ReadUtil {
         return armorProperty;
     }
 
-    public static @NotNull AttributeProperty getAttribute(YamlConfiguration item) {
-        AttributeProperty attributeProperty = new AttributeProperty();
+    public static @NotNull AttributePropertyImpl getAttribute(YamlConfiguration item) {
+        AttributePropertyImpl attributeProperty = new AttributePropertyImpl();
         ConfigurationSection attribute = item.getConfigurationSection("attribute");
         if (attribute != null) {
             ConfigurationSection global = attribute.getConfigurationSection("global");
@@ -140,14 +125,14 @@ public final class ReadUtil {
                 for (String key : global.getKeys(false)) {
                     if (key.contains(":")) {
                         NamespacedKey attributeKey = NamespacedKey.fromString(key);
-                        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getAttributeRegistryManager().getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
                         attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
                     }
                     else {
                         NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
-                        String typeName = AttributeRegistry.getInstance().getGlobalAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getAttributeRegistryManager().getGlobalAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
                         attributeProperty.addGlobalAttribute(attributeKey, global.getObject(key, javaClass));
                     }
                 }
@@ -156,20 +141,26 @@ public final class ReadUtil {
                 for (String key : itemstack.getKeys(false)) {
                     if (key.contains(":")) {
                         NamespacedKey attributeKey = NamespacedKey.fromString(key);
-                        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getAttributeRegistryManager().getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
                         attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
                     }
                     else {
                         NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), key);
-                        String typeName = AttributeRegistry.getInstance().getItemstackAttributeTypeName(attributeKey);
-                        Class<?> javaClass = AttributeTypeRegistry.getInstance().getAttributeJavaType(typeName);
+                        String typeName = AttributeRegistry.getAttributeRegistryManager().getItemstackAttributeTypeName(attributeKey);
+                        Class<?> javaClass = AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
                         attributeProperty.addItemstackAttribute(attributeKey, itemstack.getObject(key, javaClass));
                     }
                 }
             }
         }
         return attributeProperty;
+    }
+
+    public static NamespacedKey getCropId(YamlConfiguration item) {
+        String cropId = item.getString("cropId");
+        if (cropId != null) return NamespacedKey.fromString(cropId);
+        else return null;
     }
 
     public static boolean getOriginalCraft(YamlConfiguration item) {

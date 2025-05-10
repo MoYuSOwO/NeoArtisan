@@ -16,11 +16,11 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class ItemCommandRegistrar {
+final class ItemCommandRegistrar {
     private static final SuggestionProvider<CommandSourceStack> REGISTRY_ID_SUGGESTIONS =
             (ctx, builder) -> {
                 String currentInput = builder.getRemaining().toLowerCase();
-                ItemRegistry.getInstance().getAllIds().stream()
+                ItemRegistryImpl.getInstance().getAllIds().stream()
                         .filter(id -> id.toLowerCase().startsWith(currentInput))
                         .forEach(builder::suggest);
                 return builder.buildFuture();
@@ -35,7 +35,7 @@ public final class ItemCommandRegistrar {
                                             ctx -> {
                                                 if (ctx.getSource().getSender() instanceof Player player) {
                                                     NamespacedKey registryId = ctx.getArgument("registryId", NamespacedKey.class);
-                                                    player.give((ItemRegistry.getInstance().getArtisanItem(registryId)).getItemStack());
+                                                    player.give(((ArtisanItemImpl) ItemRegistryImpl.getInstance().getArtisanItem(registryId)).getItemStack());
                                                     return 1;
                                                 }
                                                 ctx.getSource().getSender().sendMessage(
@@ -52,7 +52,7 @@ public final class ItemCommandRegistrar {
                                                         if (ctx.getSource().getSender() instanceof Player player) {
                                                             NamespacedKey registryId = ctx.getArgument("registryId", NamespacedKey.class);
                                                             int count = IntegerArgumentType.getInteger(ctx, "count");
-                                                            player.give(ItemRegistry.getInstance().getArtisanItem(registryId).getItemStack(count));
+                                                            player.give(((ArtisanItemImpl) ItemRegistryImpl.getInstance().getArtisanItem(registryId)).getItemStack(count));
                                                             return 1;
                                                         }
                                                         ctx.getSource().getSender().sendMessage(

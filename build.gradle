@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.github.moyusowo'
-version = '1.0.0'
+version = '1.1.0'
 
 repositories {
     mavenCentral()
@@ -22,12 +22,16 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.MoYuSOwO:NeoArtisanAPI:v1.1:api'
+    implementation 'com.github.MoYuSOwO:NeoArtisanAPI:v1.4:api'
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 }
 
 paperweight {
     reobfJar.enabled = true
+}
+
+build {
+    dependsOn(shadowJar)
 }
 
 shadowJar {

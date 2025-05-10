@@ -1,8 +1,8 @@
 package io.github.moyusowo.neoartisan.util;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistry;
-import io.github.moyusowo.neoartisan.item.ItemRegistry;
+
+import io.github.moyusowo.neoartisanapi.api.item.ItemRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,11 +23,11 @@ public class Debug implements Listener {
         if (event.getDamager() instanceof Player player) {
             ItemStack itemStack = player.getInventory().getItemInMainHand();
             NamespacedKey attributeKey = new NamespacedKey(NeoArtisan.instance(), "level");
-            Integer level = ItemRegistry.getInstance().getItemstackAttributeValue(itemStack, attributeKey);
+            Integer level = ItemRegistry.getItemRegistryManager().getItemstackAttributeValue(itemStack, attributeKey);
             System.out.println(level);
             if (level != null) {
                 level++;
-                ItemRegistry.getInstance().setItemstackAttributeValue(itemStack, attributeKey, level);
+                ItemRegistry.getItemRegistryManager().setItemstackAttributeValue(itemStack, attributeKey, level);
             }
         }
     }
