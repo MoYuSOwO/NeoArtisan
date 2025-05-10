@@ -16,7 +16,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class ItemCommandRegistrar {
+final class ItemCommandRegistrar {
     private static final SuggestionProvider<CommandSourceStack> REGISTRY_ID_SUGGESTIONS =
             (ctx, builder) -> {
                 String currentInput = builder.getRemaining().toLowerCase();
