@@ -16,6 +16,7 @@ public final class ArtisanBlockInit {
     public static void init() {
         BlockMappingsManager.init();
         CropRegistryImpl.init();
+        ArtisanCropStorageImpl.init();
         Bukkit.getServicesManager().register(
                 CropRegistry.class,
                 CropRegistryImpl.getInstance(),
