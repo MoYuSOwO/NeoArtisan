@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public final class ReadUtil {
+final class ReadUtil {
 
     private ReadUtil() {}
 

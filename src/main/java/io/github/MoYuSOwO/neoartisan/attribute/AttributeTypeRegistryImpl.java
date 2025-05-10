@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class AttributeTypeRegistryImpl implements AttributeTypeRegistry {
+final class AttributeTypeRegistryImpl implements AttributeTypeRegistry {
 
     private static AttributeTypeRegistryImpl instance;
 

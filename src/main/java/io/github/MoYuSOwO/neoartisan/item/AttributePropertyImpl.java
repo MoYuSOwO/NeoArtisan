@@ -1,7 +1,7 @@
 package io.github.moyusowo.neoartisan.item;
 
-import io.github.moyusowo.neoartisan.attribute.AttributeRegistryImpl;
-import io.github.moyusowo.neoartisan.attribute.AttributeTypeRegistryImpl;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeRegistry;
+import io.github.moyusowo.neoartisanapi.api.attribute.AttributeTypeRegistry;
 import io.github.moyusowo.neoartisanapi.api.item.AttributeProperty;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AttributePropertyImpl implements AttributeProperty {
+class AttributePropertyImpl implements AttributeProperty {
 
     private final Map<NamespacedKey, Object> globalAttributeValues, itemstackAttributeValues;
 
@@ -24,47 +24,47 @@ public class AttributePropertyImpl implements AttributeProperty {
     }
 
     @Override
-    public void addGlobalAttribute(NamespacedKey attributeKey, Object value) {
-        if (!AttributeRegistryImpl.getInstance().hasGlobalAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
-        String typeName = AttributeRegistryImpl.getInstance().getGlobalAttributeTypeName(attributeKey);
-        Class<?> typeJavaClass = AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
+    public void addGlobalAttribute(@NotNull NamespacedKey attributeKey, @NotNull Object value) {
+        if (!AttributeRegistry.getAttributeRegistryManager().hasGlobalAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
+        String typeName = AttributeRegistry.getAttributeRegistryManager().getGlobalAttributeTypeName(attributeKey);
+        Class<?> typeJavaClass = AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
         if (!typeJavaClass.isInstance(value)) throw new IllegalArgumentException("the value doesn't match the attribute!");
         this.globalAttributeValues.put(attributeKey, value);
     }
 
     @Override
-    public void addItemstackAttribute(NamespacedKey attributeKey, Object value) {
+    public void addItemstackAttribute(@NotNull NamespacedKey attributeKey, @NotNull Object value) {
         if (attributeKey == null) throw new IllegalArgumentException("You can't provide a null key!");
-        if (!AttributeRegistryImpl.getInstance().hasItemstackAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
-        String typeName = AttributeRegistryImpl.getInstance().getItemstackAttributeTypeName(attributeKey);
-        Class<?> typeJavaClass = AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
+        if (!AttributeRegistry.getAttributeRegistryManager().hasItemstackAttribute(attributeKey)) throw new IllegalArgumentException("You didn't register this attribute!");
+        String typeName = AttributeRegistry.getAttributeRegistryManager().getItemstackAttributeTypeName(attributeKey);
+        Class<?> typeJavaClass = AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
         if (!typeJavaClass.isInstance(value)) throw new IllegalArgumentException("the value doesn't match the attribute!");
         this.itemstackAttributeValues.put(attributeKey, value);
     }
 
     @Override
-    public boolean hasGlobalAttribute(NamespacedKey attributeKey) {
+    public boolean hasGlobalAttribute(@NotNull NamespacedKey attributeKey) {
         return this.globalAttributeValues.containsKey(attributeKey);
     }
 
     @Override
-    public boolean hasItemstackAttribute(NamespacedKey attributeKey) {
+    public boolean hasItemstackAttribute(@NotNull NamespacedKey attributeKey) {
         return this.itemstackAttributeValues.containsKey(attributeKey);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull <T> T getGlobalAttributeValue(NamespacedKey attributeKey) {
-        String typeName = AttributeRegistryImpl.getInstance().getGlobalAttributeTypeName(attributeKey);
-        Class<T> type = (Class<T>) AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
+    public @NotNull <T> T getGlobalAttributeValue(@NotNull NamespacedKey attributeKey) {
+        String typeName = AttributeRegistry.getAttributeRegistryManager().getGlobalAttributeTypeName(attributeKey);
+        Class<T> type = (Class<T>) AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
         return type.cast(this.globalAttributeValues.get(attributeKey));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull <T> T getItemstackAttributeValue(NamespacedKey attributeKey) {
-        String typeName = AttributeRegistryImpl.getInstance().getItemstackAttributeTypeName(attributeKey);
-        Class<T> type = (Class<T>) AttributeTypeRegistryImpl.getInstance().getAttributeJavaType(typeName);
+    public @NotNull <T> T getItemstackAttributeValue(@NotNull NamespacedKey attributeKey) {
+        String typeName = AttributeRegistry.getAttributeRegistryManager().getItemstackAttributeTypeName(attributeKey);
+        Class<T> type = (Class<T>) AttributeTypeRegistry.getAttributeTypeRegistryManager().getAttributeJavaType(typeName);
         return type.cast(this.itemstackAttributeValues.get(attributeKey));
     }
 

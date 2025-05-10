@@ -1,10 +1,10 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisanapi.api.item.ItemRegistry;
 import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipe;
 import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipe;
 import io.github.moyusowo.neoartisanapi.api.recipe.RecipeRegistry;
-import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
 import io.github.moyusowo.neoartisan.util.Util;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class RecipeRegistryImpl implements Listener, RecipeRegistry {
+final class RecipeRegistryImpl implements Listener, RecipeRegistry {
 
     private static RecipeRegistryImpl instance;
 
@@ -120,8 +120,8 @@ public final class RecipeRegistryImpl implements Listener, RecipeRegistry {
         if (event.getRecipe() != null) {
             for (int i = 0; i < 9; i++) {
                 if (matrix[i] == null) continue;
-                NamespacedKey registryId = ItemRegistryImpl.getInstance().getRegistryId(matrix[i]);
-                if (ItemRegistryImpl.getInstance().isArtisanItem(registryId) && (!ItemRegistryImpl.getInstance().getArtisanItemAPI(registryId).hasOriginalCraft())) {
+                NamespacedKey registryId = ItemRegistry.getItemRegistryManager().getRegistryId(matrix[i]);
+                if (ItemRegistry.getItemRegistryManager().isArtisanItem(registryId) && (!ItemRegistry.getItemRegistryManager().getArtisanItemAPI(registryId).hasOriginalCraft())) {
                     event.getInventory().setResult(null);
                     break;
                 } else {
@@ -132,12 +132,12 @@ public final class RecipeRegistryImpl implements Listener, RecipeRegistry {
         String shapedRegistryKey = ArtisanShapedRecipeImpl.toRegistryKey(matrix);
         if (shapedRegistry.containsKey(shapedRegistryKey)) {
             ArtisanShapedRecipeImpl r = shapedRegistry.get(shapedRegistryKey);
-            event.getInventory().setResult(ItemRegistryImpl.getInstance().getItemStack(r.getResult(), r.getCount()));
+            event.getInventory().setResult(ItemRegistry.getItemRegistryManager().getItemStack(r.getResult(), r.getCount()));
         } else {
             String shapelessRegistryKey = ArtisanShapelessRecipeImpl.toRegistryKey(matrix);
             if (shapelessRegistry.containsKey(shapelessRegistryKey)) {
                 ArtisanShapelessRecipeImpl r = shapelessRegistry.get(shapelessRegistryKey);
-                event.getInventory().setResult(ItemRegistryImpl.getInstance().getItemStack(r.getResult(), r.getCount()));
+                event.getInventory().setResult(ItemRegistry.getItemRegistryManager().getItemStack(r.getResult(), r.getCount()));
             }
         }
     }
@@ -202,11 +202,11 @@ public final class RecipeRegistryImpl implements Listener, RecipeRegistry {
         if (event.getResult() == null) return;
         ItemStack firstItem = event.getInventory().getFirstItem();
         ItemStack secondItem = event.getInventory().getSecondItem();
-        if (ItemRegistryImpl.getInstance().isArtisanItem(firstItem)) {
+        if (ItemRegistry.getItemRegistryManager().isArtisanItem(firstItem)) {
             event.setResult(null);
             return;
         }
-        if (ItemRegistryImpl.getInstance().isArtisanItem(secondItem)) {
+        if (ItemRegistry.getItemRegistryManager().isArtisanItem(secondItem)) {
             event.setResult(null);
         }
     }
@@ -217,7 +217,7 @@ public final class RecipeRegistryImpl implements Listener, RecipeRegistry {
         Furnace furnace = (Furnace) event.getBlock().getState();
         ItemStack fuel = furnace.getSnapshotInventory().getFuel();
         ItemStack smelting = furnace.getSnapshotInventory().getSmelting();
-        if ((ItemRegistryImpl.getInstance().isArtisanItem(smelting)) || (ItemRegistryImpl.getInstance().isArtisanItem(fuel))) {
+        if ((ItemRegistry.getItemRegistryManager().isArtisanItem(smelting)) || (ItemRegistry.getItemRegistryManager().isArtisanItem(fuel))) {
             event.setCancelled(true);
         }
     }
@@ -225,7 +225,7 @@ public final class RecipeRegistryImpl implements Listener, RecipeRegistry {
     @EventHandler
     private void onSmithing(PrepareSmithingEvent event) {
         if (event.getInventory().getInputEquipment() == null) return;
-        if (ItemRegistryImpl.getInstance().isArtisanItem(event.getInventory().getInputEquipment())) event.setResult(null);
+        if (ItemRegistry.getItemRegistryManager().isArtisanItem(event.getInventory().getInputEquipment())) event.setResult(null);
     }
 
 }

@@ -1,14 +1,14 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisanapi.api.item.ItemRegistry;
 import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapelessRecipe;
-import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class ArtisanShapelessRecipeImpl implements ArtisanShapelessRecipe {
+class ArtisanShapelessRecipeImpl implements ArtisanShapelessRecipe {
     private final NamespacedKey[] recipe;
     private NamespacedKey result;
     private int count;
@@ -23,7 +23,7 @@ public class ArtisanShapelessRecipeImpl implements ArtisanShapelessRecipe {
         Arrays.fill(inv, "");
         for (int i = 0; i < 9; i++) {
             if (matrix[i] != null) {
-                inv[i] = ItemRegistryImpl.getInstance().getRegistryId(matrix[i]).asString();
+                inv[i] = ItemRegistry.getItemRegistryManager().getRegistryId(matrix[i]).asString();
             }
         }
         Arrays.sort(inv);

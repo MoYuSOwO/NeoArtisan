@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class AttributeRegistryImpl implements AttributeRegistry {
+final class AttributeRegistryImpl implements AttributeRegistry {
 
     public static void init() {
         new AttributeRegistryImpl();

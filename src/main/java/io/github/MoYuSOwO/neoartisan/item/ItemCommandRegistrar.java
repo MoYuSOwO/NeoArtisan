@@ -35,7 +35,7 @@ public final class ItemCommandRegistrar {
                                             ctx -> {
                                                 if (ctx.getSource().getSender() instanceof Player player) {
                                                     NamespacedKey registryId = ctx.getArgument("registryId", NamespacedKey.class);
-                                                    player.give((ItemRegistryImpl.getInstance().getArtisanItem(registryId)).getItemStack());
+                                                    player.give(((ArtisanItemImpl) ItemRegistryImpl.getInstance().getArtisanItem(registryId)).getItemStack());
                                                     return 1;
                                                 }
                                                 ctx.getSource().getSender().sendMessage(
@@ -52,7 +52,7 @@ public final class ItemCommandRegistrar {
                                                         if (ctx.getSource().getSender() instanceof Player player) {
                                                             NamespacedKey registryId = ctx.getArgument("registryId", NamespacedKey.class);
                                                             int count = IntegerArgumentType.getInteger(ctx, "count");
-                                                            player.give(ItemRegistryImpl.getInstance().getArtisanItem(registryId).getItemStack(count));
+                                                            player.give(((ArtisanItemImpl) ItemRegistryImpl.getInstance().getArtisanItem(registryId)).getItemStack(count));
                                                             return 1;
                                                         }
                                                         ctx.getSource().getSender().sendMessage(

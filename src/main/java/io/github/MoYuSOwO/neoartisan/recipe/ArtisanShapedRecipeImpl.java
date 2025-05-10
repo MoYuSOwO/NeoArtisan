@@ -1,8 +1,8 @@
 package io.github.moyusowo.neoartisan.recipe;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisanapi.api.item.ItemRegistry;
 import io.github.moyusowo.neoartisanapi.api.recipe.ArtisanShapedRecipe;
-import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArtisanShapedRecipeImpl implements ArtisanShapedRecipe {
+class ArtisanShapedRecipeImpl implements ArtisanShapedRecipe {
     private final Map<Character, NamespacedKey> toRegistryId;
     private final char[] recipe;
     private NamespacedKey result;
@@ -21,7 +21,7 @@ public class ArtisanShapedRecipeImpl implements ArtisanShapedRecipe {
         StringBuilder builtRecipe = new StringBuilder();
         for (int i = 0; i < 9; i++) {
             if (matrix[i] != null) {
-                builtRecipe.append(ItemRegistryImpl.getInstance().getRegistryId(matrix[i]));
+                builtRecipe.append(ItemRegistry.getItemRegistryManager().getRegistryId(matrix[i]));
             }
             builtRecipe.append(",");
         }
