@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static io.github.moyusowo.neoartisan.util.Util.isYmlFile;
 import static io.github.moyusowo.neoartisan.block.BlockStateUtil.stateById;
 
-public class CropRegistryImpl implements CropRegistry {
+class CropRegistryImpl implements CropRegistry {
 
     private static CropRegistryImpl instance;
 

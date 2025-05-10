@@ -3,7 +3,7 @@ package io.github.moyusowo.neoartisan.block.crop;
 import io.github.moyusowo.neoartisanapi.api.block.crop.CurrentCropStage;
 import org.bukkit.NamespacedKey;
 
-public record CurrentCropStageImpl(NamespacedKey cropId, int stage) implements CurrentCropStage {
+record CurrentCropStageImpl(NamespacedKey cropId, int stage) implements CurrentCropStage {
 
     @Override
     public int getBlockState() {

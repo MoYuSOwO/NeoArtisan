@@ -27,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static io.github.moyusowo.neoartisan.block.BlockStateUtil.stateById;
 
-public final class ArtisanCropBehavior implements Listener {
+final class ArtisanCropBehavior implements Listener {
 
     private static final HashMap<Block, CurrentCropStageImpl> grownCrop = new HashMap<>();
 

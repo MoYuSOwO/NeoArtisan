@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-public class ArtisanCropImpl implements ArtisanCrop {
+class ArtisanCropImpl implements ArtisanCrop {
     private final NamespacedKey cropId;
     private final List<CropStageProperty> stages;
     private final int actualState;
