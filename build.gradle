@@ -22,12 +22,16 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.MoYuSOwO:NeoArtisanAPI:v1.3.1:api'
+    implementation 'com.github.MoYuSOwO:NeoArtisanAPI:v1.3.2:api'
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 }
 
 paperweight {
     reobfJar.enabled = true
+}
+
+build {
+    dependsOn(shadowJar)
 }
 
 shadowJar {

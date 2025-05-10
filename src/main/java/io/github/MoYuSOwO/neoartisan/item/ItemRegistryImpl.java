@@ -303,25 +303,13 @@ final class ItemRegistryImpl implements ItemRegistry {
     }
 
     @Override
-    public @NotNull ArtisanItem getArtisanItemAPI(@NotNull NamespacedKey registryId) {
+    public @NotNull ArtisanItem getArtisanItem(@NotNull NamespacedKey registryId) {
         ArtisanItemImpl artisanItem = registry.get(registryId);
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
         return artisanItem;
     }
 
     @Override
-    public @NotNull ArtisanItem getArtisanItemAPI(ItemStack itemStack) {
-        ArtisanItemImpl artisanItem = registry.get(getRegistryId(itemStack));
-        if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
-        return artisanItem;
-    }
-
-    public @NotNull ArtisanItem getArtisanItem(NamespacedKey registryId) {
-        ArtisanItemImpl artisanItem = registry.get(registryId);
-        if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");
-        return artisanItem;
-    }
-
     public @NotNull ArtisanItem getArtisanItem(ItemStack itemStack) {
         ArtisanItemImpl artisanItem = registry.get(getRegistryId(itemStack));
         if (artisanItem == null) throw new IllegalArgumentException("You should use has method to check before get!");

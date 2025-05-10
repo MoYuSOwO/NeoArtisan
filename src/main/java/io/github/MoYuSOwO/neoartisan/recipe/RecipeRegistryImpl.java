@@ -121,7 +121,7 @@ final class RecipeRegistryImpl implements Listener, RecipeRegistry {
             for (int i = 0; i < 9; i++) {
                 if (matrix[i] == null) continue;
                 NamespacedKey registryId = ItemRegistry.getItemRegistryManager().getRegistryId(matrix[i]);
-                if (ItemRegistry.getItemRegistryManager().isArtisanItem(registryId) && (!ItemRegistry.getItemRegistryManager().getArtisanItemAPI(registryId).hasOriginalCraft())) {
+                if (ItemRegistry.getItemRegistryManager().isArtisanItem(registryId) && (!ItemRegistry.getItemRegistryManager().getArtisanItem(registryId).hasOriginalCraft())) {
                     event.getInventory().setResult(null);
                     break;
                 } else {
