@@ -25,9 +25,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static io.github.moyusowo.neoartisan.block.BlockStateUtil.stateById;
+
 public final class ArtisanCropBehavior implements Listener {
 
-    private static final HashMap<Block, CurrentCropStage> grownCrop = new HashMap<>();
+    private static final HashMap<Block, CurrentCropStageImpl> grownCrop = new HashMap<>();
 
     private ArtisanCropBehavior() {}
 
@@ -45,73 +47,73 @@ public final class ArtisanCropBehavior implements Listener {
         if (event.getBlockFace() != BlockFace.UP) return;
         if (event.getClickedBlock().getRelative(BlockFace.UP).getType() != Material.AIR) return;
         event.setCancelled(true);
-        place(event.getClickedBlock().getRelative(BlockFace.UP), new CurrentCropStage(artisanItem.getCropId(), 1));
+        place(event.getClickedBlock().getRelative(BlockFace.UP), new CurrentCropStageImpl(artisanItem.getCropId(), 1));
         event.getItem().setAmount(event.getItem().getAmount() - 1);
     }
 
     @EventHandler
     private static void onArtisanCropBreak(BlockBreakEvent event) {
-        if (!ArtisanCropStorage.isArtisanCrop(event.getBlock())) return;
+        if (!ArtisanCropStorageImpl.getInstance().isArtisanCrop(event.getBlock())) return;
         if (event.isCancelled()) return;
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            ArtisanCropStorage.removeArtisanCrop(event.getBlock());
+            ArtisanCropStorageImpl.getInstance().removeArtisanCrop(event.getBlock());
             return;
         }
         event.setCancelled(true);
         event.getBlock().setType(Material.AIR);
-        CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(event.getBlock());
+        CurrentCropStageImpl currentCropStage = (CurrentCropStageImpl) ArtisanCropStorageImpl.getInstance().getArtisanCropStage(event.getBlock());
         for (NamespacedKey drop : currentCropStage.getDrops()) {
             event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), ItemRegistry.getItemRegistryManager().getItemStack(drop));
         }
-        ArtisanCropStorage.removeArtisanCrop(event.getBlock());
+        ArtisanCropStorageImpl.getInstance().removeArtisanCrop(event.getBlock());
     }
 
     @EventHandler
     private static void onBlockBreakUnderCrop(BlockBreakEvent event) {
-        if (!ArtisanCropStorage.isArtisanCrop(event.getBlock().getRelative(BlockFace.UP))) return;
+        if (!ArtisanCropStorageImpl.getInstance().isArtisanCrop(event.getBlock().getRelative(BlockFace.UP))) return;
         if (event.isCancelled()) return;
         event.setCancelled(true);
         event.getBlock().setType(Material.AIR);
         event.getBlock().getRelative(BlockFace.UP).setType(Material.AIR);
-        CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(event.getBlock().getRelative(BlockFace.UP));
+        CurrentCropStageImpl currentCropStage = (CurrentCropStageImpl) ArtisanCropStorageImpl.getInstance().getArtisanCropStage(event.getBlock().getRelative(BlockFace.UP));
         for (NamespacedKey registryId : currentCropStage.getDrops()) {
             event.getBlock().getWorld().dropItemNaturally(event.getBlock().getRelative(BlockFace.UP).getLocation(), ItemRegistry.getItemRegistryManager().getItemStack(registryId));
         }
-        ArtisanCropStorage.removeArtisanCrop(event.getBlock().getRelative(BlockFace.UP));
+        ArtisanCropStorageImpl.getInstance().removeArtisanCrop(event.getBlock().getRelative(BlockFace.UP));
     }
 
     @EventHandler
     private static void onWaterFlowOverCustomCrop(BlockBreakBlockEvent event) {
-        if (!ArtisanCropStorage.isArtisanCrop(event.getBlock())) return;
+        if (!ArtisanCropStorageImpl.getInstance().isArtisanCrop(event.getBlock())) return;
         while (!event.getDrops().isEmpty()) event.getDrops().removeFirst();
-        CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(event.getBlock());
+        CurrentCropStageImpl currentCropStage = (CurrentCropStageImpl) ArtisanCropStorageImpl.getInstance().getArtisanCropStage(event.getBlock());
         for (NamespacedKey registryId : currentCropStage.getDrops()) {
             event.getDrops().add(ItemRegistry.getItemRegistryManager().getItemStack(registryId));
         }
-        ArtisanCropStorage.removeArtisanCrop(event.getBlock());
+        ArtisanCropStorageImpl.getInstance().removeArtisanCrop(event.getBlock());
     }
 
     @EventHandler
     private static void onEntityChangeFarmland(EntityChangeBlockEvent event) {
-        if (!ArtisanCropStorage.isArtisanCrop(event.getBlock().getRelative(BlockFace.UP))) return;
+        if (!ArtisanCropStorageImpl.getInstance().isArtisanCrop(event.getBlock().getRelative(BlockFace.UP))) return;
         if (event.getBlock().getType() != Material.FARMLAND) return;
         if (event.isCancelled()) return;
         event.setCancelled(true);
         event.getBlock().getRelative(BlockFace.UP).setType(Material.AIR);
         event.getBlock().setType(Material.DIRT);
-        CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(event.getBlock().getRelative(BlockFace.UP));
+        CurrentCropStageImpl currentCropStage = (CurrentCropStageImpl) ArtisanCropStorageImpl.getInstance().getArtisanCropStage(event.getBlock().getRelative(BlockFace.UP));
         for (NamespacedKey registryId : currentCropStage.getDrops()) {
             event.getBlock().getWorld().dropItemNaturally(event.getBlock().getRelative(BlockFace.UP).getLocation(), ItemRegistry.getItemRegistryManager().getItemStack(registryId));
         }
-        ArtisanCropStorage.removeArtisanCrop(event.getBlock().getRelative(BlockFace.UP));
+        ArtisanCropStorageImpl.getInstance().removeArtisanCrop(event.getBlock().getRelative(BlockFace.UP));
     }
 
     @EventHandler
     private static void onCustomCropGrow(BlockGrowEvent event) {
-        if (!ArtisanCropStorage.isArtisanCrop(event.getBlock())) return;
+        if (!ArtisanCropStorageImpl.getInstance().isArtisanCrop(event.getBlock())) return;
         if (event.isCancelled()) return;
         event.setCancelled(true);
-        CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(event.getBlock());
+        CurrentCropStageImpl currentCropStage = (CurrentCropStageImpl) ArtisanCropStorageImpl.getInstance().getArtisanCropStage(event.getBlock());
         if (currentCropStage.hasNextStage()) {
             grownCrop.put(event.getBlock(), currentCropStage);
             new BukkitRunnable() {
@@ -128,11 +130,11 @@ public final class ArtisanCropBehavior implements Listener {
     private static void onCustomCropFertilize(BlockFertilizeEvent event) {
         if (event.isCancelled()) return;
         for (BlockState blockState : event.getBlocks()) {
-            if (ArtisanCropStorage.isArtisanCrop(blockState.getBlock())) {
+            if (ArtisanCropStorageImpl.getInstance().isArtisanCrop(blockState.getBlock())) {
                 replace(blockState.getBlock(), grownCrop.get(blockState.getBlock()));
                 grownCrop.remove(blockState.getBlock());
                 event.setCancelled(true);
-                CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(blockState.getBlock());
+                CurrentCropStageImpl currentCropStage = (CurrentCropStageImpl) ArtisanCropStorageImpl.getInstance().getArtisanCropStage(blockState.getBlock());
                 if (currentCropStage.hasNextStage()) {
                     replace(blockState.getBlock(), currentCropStage.getNextStage());
                     playBoneMealEffects(blockState.getLocation());
@@ -141,20 +143,20 @@ public final class ArtisanCropBehavior implements Listener {
         }
     }
 
-    private static void place(Block bukkitBlock, CurrentCropStage currentCropStage) throws Exception {
+    private static void place(Block bukkitBlock, CurrentCropStageImpl currentCropStage) throws Exception {
         CraftWorld craftWorld = (CraftWorld) bukkitBlock.getWorld();
         Level nmsWorld = craftWorld.getHandle();
         BlockPos pos = new BlockPos(bukkitBlock.getX(), bukkitBlock.getY(), bukkitBlock.getZ());
-        ArtisanCropStorage.placeArtisanCrop(nmsWorld, pos, currentCropStage);
-        nmsWorld.setBlock(pos, currentCropStage.getBlockState(), 3);
+        ArtisanCropStorageImpl.getInstance().placeArtisanCrop(nmsWorld, pos, currentCropStage);
+        nmsWorld.setBlock(pos, stateById(currentCropStage.getBlockState()), 3);
     }
 
-    private static void replace(Block bukkitBlock, CurrentCropStage currentCropStage) {
+    private static void replace(Block bukkitBlock, CurrentCropStageImpl currentCropStage) {
         CraftWorld craftWorld = (CraftWorld) bukkitBlock.getWorld();
         Level nmsWorld = craftWorld.getHandle();
         BlockPos pos = new BlockPos(bukkitBlock.getX(), bukkitBlock.getY(), bukkitBlock.getZ());
-        ArtisanCropStorage.replaceArtisanCrop(nmsWorld, pos, currentCropStage);
-        nmsWorld.setBlock(pos, currentCropStage.getBlockState(), 3);
+        ArtisanCropStorageImpl.getInstance().replaceArtisanCrop(nmsWorld, pos, currentCropStage);
+        nmsWorld.setBlock(pos, stateById(currentCropStage.getBlockState()), 3);
     }
 
     private static void playBoneMealEffects(Location loc) {

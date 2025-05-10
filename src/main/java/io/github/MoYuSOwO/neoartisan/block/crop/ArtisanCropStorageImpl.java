@@ -1,8 +1,11 @@
 package io.github.moyusowo.neoartisan.block.crop;
 
+import io.github.moyusowo.neoartisanapi.api.block.crop.ArtisanCropStorage;
+import io.github.moyusowo.neoartisanapi.api.block.crop.CurrentCropStage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.jetbrains.annotations.NotNull;
@@ -12,15 +15,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public final class ArtisanCropStorage {
+public final class ArtisanCropStorageImpl implements ArtisanCropStorage {
 
-    private ArtisanCropStorage() {}
+    private static ArtisanCropStorageImpl instance;
 
-    private static final Map<Level, Map<ChunkPos, Map<BlockPos, CurrentCropStage>>> storage = new HashMap<>();
+    public static ArtisanCropStorageImpl getInstance() {
+        return instance;
+    }
 
-    private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    public static void init() {
+        new ArtisanCropStorageImpl();
+    }
 
-    public static void replaceArtisanCrop(Level level, BlockPos blockPos, CurrentCropStage block) {
+    private ArtisanCropStorageImpl() {
+        instance = this;
+        this.storage = new HashMap<>();
+        this.lock = new ReentrantReadWriteLock();
+    }
+
+    private final Map<Level, Map<ChunkPos, Map<BlockPos, CurrentCropStageImpl>>> storage;
+
+    private final ReentrantReadWriteLock lock;
+
+    public void replaceArtisanCrop(Level level, BlockPos blockPos, CurrentCropStageImpl block) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
         lock.writeLock().lock();
         try {
@@ -30,7 +47,7 @@ public final class ArtisanCropStorage {
         }
     }
 
-    public static void placeArtisanCrop(Level level, BlockPos blockPos, CurrentCropStage block) {
+    public void placeArtisanCrop(Level level, BlockPos blockPos, CurrentCropStageImpl block) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
         lock.writeLock().lock();
         try {
@@ -40,7 +57,7 @@ public final class ArtisanCropStorage {
         }
     }
 
-    public static void removeArtisanCrop(Level level, BlockPos blockPos) {
+    public void removeArtisanCrop(Level level, BlockPos blockPos) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
         lock.writeLock().lock();
         try {
@@ -53,21 +70,21 @@ public final class ArtisanCropStorage {
         }
     }
 
-    public static void removeArtisanCrop(Level level, int x, int y, int z) {
+    public void removeArtisanCrop(Level level, int x, int y, int z) {
         BlockPos blockPos = new BlockPos(x, y, z);
         removeArtisanCrop(level, blockPos);
     }
 
-    public static void removeArtisanCrop(Block block) {
+    public void removeArtisanCrop(Block block) {
         CraftWorld world = (CraftWorld) block.getWorld();
         removeArtisanCrop(world.getHandle(), block.getX(), block.getY(), block.getZ());
     }
 
-    public static @NotNull CurrentCropStage getArtisanCropStage(Level level, BlockPos blockPos) {
+    public @NotNull CurrentCropStageImpl getArtisanCropStage(Level level, BlockPos blockPos) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
         lock.readLock().lock();
         try {
-            CurrentCropStage currentCropStage = storage.get(level).get(chunkPos).get(blockPos);
+            CurrentCropStageImpl currentCropStage = storage.get(level).get(chunkPos).get(blockPos);
             if (currentCropStage == null) throw new IllegalArgumentException("Please use is method to check first!");
             else return currentCropStage;
         } finally {
@@ -75,44 +92,49 @@ public final class ArtisanCropStorage {
         }
     }
 
-    public static CurrentCropStage getArtisanCropStage(Level level, int x, int y, int z) {
+    public CurrentCropStageImpl getArtisanCropStage(Level level, int x, int y, int z) {
         BlockPos blockPos = new BlockPos(x, y, z);
         return getArtisanCropStage(level, blockPos);
     }
 
-    public static CurrentCropStage getArtisanCropStage(Block block) {
+    public CurrentCropStage getArtisanCropStage(World world, int x, int y, int z) {
+        BlockPos blockPos = new BlockPos(x, y, z);
+        return getArtisanCropStage(((CraftWorld) world).getHandle(), blockPos);
+    }
+
+    public CurrentCropStage getArtisanCropStage(Block block) {
         CraftWorld world = (CraftWorld) block.getWorld();
         return getArtisanCropStage(world.getHandle(), block.getX(), block.getY(), block.getZ());
     }
 
-    public static Map<BlockPos, CurrentCropStage> getChunkArtisanCrops(Level level, ChunkPos chunkPos) {
+    public Map<BlockPos, CurrentCropStageImpl> getChunkArtisanCrops(Level level, ChunkPos chunkPos) {
         lock.readLock().lock();
         try {
-            Map<ChunkPos, Map<BlockPos, CurrentCropStage>> levelMap = storage.getOrDefault(level, null);
+            Map<ChunkPos, Map<BlockPos, CurrentCropStageImpl>> levelMap = storage.getOrDefault(level, null);
             if (levelMap == null) return Collections.emptyMap();
-            Map<BlockPos, CurrentCropStage> chunkMap = levelMap.getOrDefault(chunkPos, null);
+            Map<BlockPos, CurrentCropStageImpl> chunkMap = levelMap.getOrDefault(chunkPos, null);
             return chunkMap != null ? Map.copyOf(chunkMap) : Collections.emptyMap();
         } finally {
             lock.readLock().unlock();
         }
     }
 
-    public static Map<BlockPos, CurrentCropStage> getChunkArtisanCrops(Level level, int chunkX, int chunkZ) {
+    public Map<BlockPos, CurrentCropStageImpl> getChunkArtisanCrops(Level level, int chunkX, int chunkZ) {
         ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
         return getChunkArtisanCrops(level, chunkPos);
     }
 
-    public static Map<ChunkPos, Map<BlockPos, CurrentCropStage>> getLevelArtisanCrops(Level level) {
+    public Map<ChunkPos, Map<BlockPos, CurrentCropStageImpl>> getLevelArtisanCrops(Level level) {
         lock.readLock().lock();
         try {
-            Map<ChunkPos, Map<BlockPos, CurrentCropStage>> levelMap = storage.getOrDefault(level, null);
+            Map<ChunkPos, Map<BlockPos, CurrentCropStageImpl>> levelMap = storage.getOrDefault(level, null);
             return levelMap != null ? Map.copyOf(levelMap) : Collections.emptyMap();
         } finally {
             lock.readLock().unlock();
         }
     }
 
-    public static boolean isArtisanCrop(Level level, BlockPos blockPos) {
+    public boolean isArtisanCrop(Level level, BlockPos blockPos) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
         lock.readLock().lock();
         try {
@@ -122,17 +144,22 @@ public final class ArtisanCropStorage {
         }
     }
 
-    public static boolean isArtisanCrop(Level level, int x, int y, int z) {
+    public boolean isArtisanCrop(Level level, int x, int y, int z) {
         BlockPos blockPos = new BlockPos(x, y, z);
         return isArtisanCrop(level, blockPos);
     }
 
-    public static boolean isArtisanCrop(Block block) {
+    public boolean isArtisanCrop(Block block) {
         CraftWorld world = (CraftWorld) block.getWorld();
         return isArtisanCrop(world.getHandle(), block.getX(), block.getY(), block.getZ());
     }
 
-    public static boolean hasArtisanCropInChunk(Level level, ChunkPos chunkPos) {
+    public boolean isArtisanCrop(World world, int x, int y, int z) {
+        BlockPos blockPos = new BlockPos(x, y, z);
+        return isArtisanCrop(((CraftWorld) world).getHandle(), blockPos);
+    }
+
+    public boolean hasArtisanCropInChunk(Level level, ChunkPos chunkPos) {
         lock.readLock().lock();
         try {
             return storage.containsKey(level) && storage.get(level).containsKey(chunkPos);
@@ -141,12 +168,12 @@ public final class ArtisanCropStorage {
         }
     }
 
-    public static boolean hasArtisanCropInChunk(Level level, int chunkX, int chunkZ) {
+    public boolean hasArtisanCropInChunk(Level level, int chunkX, int chunkZ) {
         ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
         return hasArtisanCropInChunk(level, chunkPos);
     }
 
-    public static boolean hasArtisanCropInLevel(Level level) {
+    public boolean hasArtisanCropInLevel(Level level) {
         lock.readLock().lock();
         try {
             return storage.containsKey(level);
