@@ -1,10 +1,11 @@
 package io.github.moyusowo.neoartisan.util;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
-import io.github.moyusowo.neoartisan.item.ItemRegistryImpl;
+import io.github.moyusowo.neoartisanapi.api.item.ItemRegistry;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
@@ -17,7 +18,7 @@ public final class Util {
         String id = s;
         if (!id.contains(":")) id = "minecraft:" + s;
         NamespacedKey key = NamespacedKey.fromString(id);
-        if (!ItemRegistryImpl.getInstance().hasItem(key)) throw new IllegalArgumentException(s + " is not a effective registryId");
+        if (!ItemRegistry.getItemRegistryManager().hasItem(key)) throw new IllegalArgumentException(s + " is not a effective registryId");
         return key;
     }
 
@@ -57,5 +58,11 @@ public final class Util {
             return;
         }
         NeoArtisan.instance().saveResource(resourcePath, false);
+    }
+
+    public static boolean isYmlFile(@NotNull File file) {
+        if (!file.isFile()) return false;
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".yml") || name.endsWith(".yaml");
     }
 }

@@ -1,6 +1,9 @@
 package io.github.moyusowo.neoartisan.block.network;
 
 import io.github.moyusowo.neoartisan.NeoArtisan;
+import io.github.moyusowo.neoartisan.block.crop.ArtisanCropStorage;
+import io.github.moyusowo.neoartisan.block.crop.CropRegistryImpl;
+import io.github.moyusowo.neoartisan.block.crop.CurrentCropStage;
 import io.github.moyusowo.neoartisan.util.ReflectionUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
@@ -17,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.BitStorage;
 import net.minecraft.util.SimpleBitStorage;
 import net.minecraft.world.level.block.state.BlockState;
+import org.checkerframework.checker.units.qual.Current;
 
 import java.util.Map;
 import java.util.Objects;
@@ -37,16 +41,16 @@ public class BlockPacketHandler extends ChannelDuplexHandler {
             handleChunkUpdate(packet);
             promise.addListener(future -> {
                 if (future.isSuccess()) {
-//                    Map<BlockPos, CustomBlocks> data = CustomBlockStorage.get(player.level(), packet.getX(), packet.getZ());
-//                    int i = 0;
-//                    for (Map.Entry<BlockPos, CustomBlocks> entry : data.entrySet()) {
-//                        ClientboundBlockUpdatePacket newPacket = new ClientboundBlockUpdatePacket(entry.getKey(), entry.getValue().getShowBlockState());
-//                        ctx.write(newPacket).addListener(f -> {
-//                            if (!f.isSuccess()) {
-//                                NeoArtisan.logger().severe("补充包 " + i + " 发送失败: " + f.cause());
-//                            }
-//                        });
-//                    }
+                    Map<BlockPos, CurrentCropStage> data = ArtisanCropStorage.getChunkArtisanCrops(player.level(), packet.getX(), packet.getZ());
+                    int i = 0;
+                    for (Map.Entry<BlockPos, CurrentCropStage> entry : data.entrySet()) {
+                        ClientboundBlockUpdatePacket newPacket = new ClientboundBlockUpdatePacket(entry.getKey(), entry.getValue().getBlockState());
+                        ctx.write(newPacket).addListener(f -> {
+                            if (!f.isSuccess()) {
+                                NeoArtisan.logger().severe("补充包 " + i + " 发送失败: " + f.cause());
+                            }
+                        });
+                    }
                     ctx.flush();
 
                 } else {
@@ -60,35 +64,37 @@ public class BlockPacketHandler extends ChannelDuplexHandler {
     }
 
     private void handleSingleBlockUpdate(ClientboundBlockUpdatePacket packet) throws Exception {
-//        BlockPos blockPos = (BlockPos) ReflectionUtil.getField(packet, "pos");
-//        BlockState state = (BlockState) ReflectionUtil.getField(packet, "blockState");
-//        if (CustomBlockStorage.is(player.level(), blockPos)) {
-//            BlockState toState = CustomBlockStorage.get(player.level(), blockPos).getShowBlockState();
-//            ReflectionUtil.setField(packet, "blockState", toState);
-//        } else {
-//            BlockState toState = BlockMappingsManager.getMappedState(state);
-//            if (toState != null) {
-//                ReflectionUtil.setField(packet, "blockState", toState);
-//            }
-//        }
+        BlockPos blockPos = (BlockPos) ReflectionUtil.getField(packet, "pos");
+        BlockState state = (BlockState) ReflectionUtil.getField(packet, "blockState");
+        if (ArtisanCropStorage.isArtisanCrop(player.level(), blockPos)) {
+            CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(player.level(), blockPos);
+            BlockState toState = currentCropStage.getBlockState();
+            ReflectionUtil.setField(packet, "blockState", toState);
+        } else {
+            BlockState toState = BlockMappingsManager.getMappedState(state);
+            if (toState != null) {
+                ReflectionUtil.setField(packet, "blockState", toState);
+            }
+        }
     }
 
     private void handleSectionBlocksUpdate(ClientboundSectionBlocksUpdatePacket packet) throws Exception {
-//        SectionPos sectionPos = (SectionPos) ReflectionUtil.getField(packet, "sectionPos");
-//        short[] positions = (short[]) ReflectionUtil.getField(packet, "positions");
-//        BlockPos[] pos = toBlockPos(positions, sectionPos);
-//        BlockState[] states = (BlockState[]) ReflectionUtil.getField(packet, "states");
-//        for (int i = 0; i < states.length; i++) {
-//            if (CustomBlockStorage.is(player.level(), pos[i])) {
-//                states[i] = CustomBlockStorage.get(player.level(), pos[i]).getShowBlockState();
-//            } else {
-//                BlockState toState = BlockMappingsManager.getMappedState(states[i]);
-//                if (toState != null) {
-//                    states[i] = toState;
-//                }
-//            }
-//        }
-//        ReflectionUtil.setField(packet, "states", states);
+        SectionPos sectionPos = (SectionPos) ReflectionUtil.getField(packet, "sectionPos");
+        short[] positions = (short[]) ReflectionUtil.getField(packet, "positions");
+        BlockPos[] pos = toBlockPos(positions, sectionPos);
+        BlockState[] states = (BlockState[]) ReflectionUtil.getField(packet, "states");
+        for (int i = 0; i < states.length; i++) {
+            if (ArtisanCropStorage.isArtisanCrop(player.level(), pos[i])) {
+                CurrentCropStage currentCropStage = ArtisanCropStorage.getArtisanCropStage(player.level(), pos[i]);
+                states[i] = currentCropStage.getBlockState();
+            } else {
+                BlockState toState = BlockMappingsManager.getMappedState(states[i]);
+                if (toState != null) {
+                    states[i] = toState;
+                }
+            }
+        }
+        ReflectionUtil.setField(packet, "states", states);
     }
 
     private void handleChunkUpdate(ClientboundLevelChunkWithLightPacket packet) throws Exception {
